@@ -149,10 +149,19 @@
     }
   }
 
+  function hideMobileCta() {
+    var cta = document.getElementById("mobile-cta");
+    if (cta) {
+      cta.hidden = true;
+    }
+    document.body.classList.add("iss-form-active");
+  }
+
   function handleFieldFocus(field) {
     if (!formStartTracked) {
       formStartTracked = true;
       trackFormEvent("form_start");
+      hideMobileCta();
     }
     clearFieldError(field);
     syncFormErrorBanner();
@@ -282,6 +291,7 @@
       trackFormEvent("form_complete");
       await submitViaHiddenForm(collectFormData(true));
 
+      hideMobileCta();
       formPanel.hidden = true;
       successPanel.hidden = false;
       successPanel.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -327,6 +337,9 @@
 
   document.querySelectorAll('[data-scroll="form"]').forEach(function (button) {
     button.addEventListener("click", function () {
+      if (button.closest("#mobile-cta")) {
+        hideMobileCta();
+      }
       document.getElementById("devis").scrollIntoView({ behavior: "smooth", block: "start" });
     });
   });

@@ -597,6 +597,10 @@ a:hover {
   padding-bottom: calc(5rem + env(safe-area-inset-bottom));
 }
 
+body.iss-form-active .iss-footer {
+  padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+}
+
 @media (min-width: 640px) {
   .trust-bar__grid {
     grid-template-columns: repeat(3, 1fr);
