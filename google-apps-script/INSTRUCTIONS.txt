@@ -1,0 +1,58 @@
+CONNEXION GOOGLE SHEET — Irisolaris Store Landing Pages
+========================================================
+
+Feuille cible :
+https://docs.google.com/spreadsheets/d/1BM7ow3NBnbc-ItYQV8czw0cvmjKI36G5tBYac-XnI1c/edit
+
+Étapes :
+
+1. Ouvrir la Google Sheet ci-dessus
+2. Extensions > Apps Script
+3. Coller le contenu de Code.gs (remplacer tout le code existant)
+4. Enregistrer le projet
+5. Déployer > Gérer les déploiements > Modifier (crayon) > Nouvelle version > Déployer
+   (ou Nouveau déploiement si première fois)
+   - Type : Application Web
+   - Exécuter en tant que : Moi
+   - Qui a accès : Tout le monde
+6. Copier l'URL du déploiement (format .../macros/s/.../exec)
+7. Coller cette URL dans pac-climatisation/js/config.js :
+   sheetWebAppUrl: "https://script.google.com/macros/s/VOTRE_ID/exec"
+
+Important : à chaque modification de Code.gs, créer une nouvelle version
+du déploiement web (sinon l'ancien code reste actif).
+
+Test endpoint (OBLIGATOIRE après chaque déploiement) :
+- Ouvrir l'URL /exec dans le navigateur → doit afficher {"status":"ok",...}
+- Si "Fonction de script introuvable: doGet" → le déploiement web n'est PAS à jour :
+  Déployer > Gérer les déploiements > crayon > Nouvelle version > Déployer
+  Tant que ce test échoue, les visiteurs ne seront pas comptés et des lignes
+  parasites continueront d'apparaître dans Leads.
+
+Test :
+- Ouvrir pac-climatisation/index.html dans un navigateur
+- Accepter les cookies analytics (Tout accepter)
+- Remplir le tunnel et envoyer
+- Vérifier qu'une nouvelle ligne apparaît dans l'onglet "Leads"
+- Vérifier l'onglet "Dashboard" (1er onglet) : stats mises à jour automatiquement
+- L'onglet "Events" contient les événements bruts (pageview, session_end, form_start…)
+
+Structure des onglets :
+1. Dashboard — statistiques (valeurs calculées par le script, pas de formules)
+2. Events — tracking visiteurs (nécessite consentement cookies analytics)
+3. Leads — inscriptions formulaire complètes uniquement
+
+Initialisation / réparation (à faire une fois après chaque déploiement) :
+- Dans Apps Script : exécuter setupAll()
+  → supprime les lignes Leads parasites
+  → recalcule le Dashboard
+  → ajoute la colonne Session ID si manquante
+
+Fonctions disponibles :
+- setupAll() — réparation complète (recommandé)
+- cleanParasiteLeads() — supprime les lignes Leads incomplètes
+- repairLeads() — corrige le décalage des colonnes dans Leads
+
+Note : les stats visiteurs ne sont collectées que si l'utilisateur accepte
+les cookies analytics (bandeau cookies). Les leads sont toujours enregistrés
+à la fin du formulaire, indépendamment des cookies analytics.
