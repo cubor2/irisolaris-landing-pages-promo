@@ -133,17 +133,21 @@
     </div>
   </header>
 
-  <section class="hero">
+  <section class="hero hero--campaign">
     <div class="container container--wide hero__grid">
-      <div class="hero__content">
-        <span class="hero__badge">Climatiseur HEIWA · 2 à 7 kW</span>
-        <h1 class="hero__title">Coup de froid sur les prix !</h1>
-        <p class="hero__subtitle">Profitez d'un confort optimal été comme hiver</p>
-        <p class="hero__text">Des solutions de climatisation adaptées à votre habitation, avec installation professionnelle et accompagnement local à Cabriès.</p>
-        <button type="button" class="btn btn--primary" data-scroll="form">Estimer mon projet gratuitement</button>
+      <div class="hero__visual hero__visual--campaign">
+        <img src="assets/campaign-clim.png" alt="Couple détendu chez eux avec climatisation HEIWA" width="1353" height="1353" loading="eager">
       </div>
-      <div class="hero__visual">
-        <img src="assets/hero-heiwa-clim.webp" alt="Climatiseur HEIWA — pompe à chaleur et climatisation réversible" width="768" height="700" loading="eager">
+      <div class="hero__content">
+        <h1 class="hero__title">Coup de froid sur les prix !</h1>
+        <p class="hero__subtitle">Votre climatisation</p>
+        <div class="hero__price-block">
+          <span class="hero__price-from">à partir de :</span>
+          <span class="hero__price-amount">1&nbsp;690€<small>TTC</small></span>
+          <span class="hero__price-tag">Pose comprise*</span>
+        </div>
+        <p class="hero__disclaimer">*Selon configuration éligible. Hors options, travaux supplémentaires, contraintes techniques du chantier et frais de raccordement éventuels.</p>
+        <button type="button" class="btn btn--primary btn--hero" data-scroll="form">Estimer mon projet gratuitement</button>
       </div>
     </div>
   </section>
@@ -167,31 +171,36 @@
     </div>
   </section>
 
-  <section class="section">
+  <section class="product-spotlight section section--alt" aria-labelledby="product-section-title">
     <div class="container">
-      <h2 class="section__title">Une solution adaptée à votre habitation</h2>
-      <p class="section__intro">Confort thermique, économies d'énergie et simplicité au quotidien — Irisolaris Store vous accompagne de A à Z.</p>
-      <div class="benefits">
-        <article class="benefit-card">
-          <div class="benefit-card__icon" aria-hidden="true">☀️</div>
-          <h3 class="benefit-card__title">Profitez d'un intérieur confortable tout l'été</h3>
-          <p class="benefit-card__text">Sensation de fraîcheur et bien-être à la maison grâce à la technologie Inverter, pour une température stable sans pics de consommation.</p>
-        </article>
-        <article class="benefit-card">
-          <div class="benefit-card__icon" aria-hidden="true">❄️</div>
-          <h3 class="benefit-card__title">Chaleur homogène en hiver</h3>
-          <p class="benefit-card__text">Jusqu'à 70&nbsp;% d'économies sur votre facture de chauffage avec une pompe à chaleur performante, silencieuse et écologique.</p>
-        </article>
-        <article class="benefit-card">
-          <div class="benefit-card__icon" aria-hidden="true">⚡</div>
-          <h3 class="benefit-card__title">Des équipements performants et économiques</h3>
-          <p class="benefit-card__text">Climatiseurs HEIWA de 2 à 7 kW, pilotage à distance et air intérieur filtré pour un confort intelligent toute l'année.</p>
-        </article>
-        <article class="benefit-card">
-          <div class="benefit-card__icon" aria-hidden="true">🛠️</div>
-          <h3 class="benefit-card__title">Installation par des professionnels qualifiés</h3>
-          <p class="benefit-card__text">Un réseau national de poseurs expérimentés assure visites techniques et installation dans le respect des normes en vigueur.</p>
-        </article>
+      <h2 class="section__title" id="product-section-title">Notre climatiseur coup de cœur</h2>
+      <p class="section__intro">Silence, purification de l'air et pilotage à distance : voici le modèle que nos experts recommandent.</p>
+      <div class="product-spotlight__card">
+        <div class="product-spotlight__media">
+          <img src="assets/produit-hyoko-3.png" alt="Climatiseur mural HEIWA Hyōkō 3 blanc mat" width="656" height="291" loading="lazy">
+        </div>
+        <div class="product-spotlight__body">
+          <h3 class="product-spotlight__name">HEIWA — Murale Hyōkō 3</h3>
+          <p class="product-spotlight__spec">2,5 kW · Blanc mat</p>
+          <ul class="product-spotlight__pills" aria-label="Points forts">
+            <li>Garantie 5 ans pièces</li>
+            <li>Silence 12 dB</li>
+            <li>Wifi</li>
+            <li>Purification de l'air</li>
+          </ul>
+          <details class="product-details">
+            <summary>Toutes les caractéristiques</summary>
+            <ul class="product-details__list">
+              <li>Balayage horizontal et vertical</li>
+              <li>Purification de l'air : Cold Plasma et Lampe UVC</li>
+              <li>Fonction Nettoyage + AutoClean</li>
+              <li>Contrôle automatique de l'hygrométrie HYGRO+</li>
+            </ul>
+            <p class="product-details__link">
+              <a href="https://www.heiwa-france.com/fr/residentiel/climatiseurs-muraux-heiwa/mural-premium-hyoko-3-2-5kw.html" target="_blank" rel="noopener">Mural Premium Hyōkō 3 2,5 kW — Heiwa France</a>
+            </p>
+          </details>
+        </div>
       </div>
     </div>
   </section>
@@ -365,13 +374,49 @@
     </div>
   </section>
 
-  <section class="section section--alt">
+  <section class="section">
     <div class="container">
+      <h2 class="section__title">Une solution adaptée à votre habitation</h2>
+      <p class="section__intro">Confort thermique, économies d'énergie et simplicité au quotidien — Irisolaris Store vous accompagne de A à Z.</p>
+      <div class="benefits">
+        <article class="benefit-card">
+          <div class="benefit-card__icon" aria-hidden="true">☀️</div>
+          <h3 class="benefit-card__title">Profitez d'un intérieur confortable tout l'été</h3>
+          <p class="benefit-card__text">Sensation de fraîcheur et bien-être à la maison grâce à la technologie Inverter, pour une température stable sans pics de consommation.</p>
+        </article>
+        <article class="benefit-card">
+          <div class="benefit-card__icon" aria-hidden="true">❄️</div>
+          <h3 class="benefit-card__title">Chaleur homogène en hiver</h3>
+          <p class="benefit-card__text">Jusqu'à 70&nbsp;% d'économies sur votre facture de chauffage avec une pompe à chaleur performante, silencieuse et écologique.</p>
+        </article>
+        <article class="benefit-card">
+          <div class="benefit-card__icon" aria-hidden="true">⚡</div>
+          <h3 class="benefit-card__title">Des équipements performants et économiques</h3>
+          <p class="benefit-card__text">Climatiseurs HEIWA de 2 à 7 kW, pilotage à distance et air intérieur filtré pour un confort intelligent toute l'année.</p>
+        </article>
+        <article class="benefit-card">
+          <div class="benefit-card__icon" aria-hidden="true">🛠️</div>
+          <h3 class="benefit-card__title">Installation par des professionnels qualifiés</h3>
+          <p class="benefit-card__text">Un réseau national de poseurs expérimentés assure visites techniques et installation dans le respect des normes en vigueur.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--alt section--store">
+    <div class="container container--wide">
       <div class="store-block">
-        <h2 class="store-block__title">Votre expert énergétique local à Cabriès</h2>
-        <p class="store-block__text">Retrouvez-nous dans votre magasin Irisolaris Store à Cabriès – Plan de Campagne.</p>
-        <p class="store-block__text">350 Avenue – 13790 Cabriès</p>
-        <p class="store-block__phone">☎ 04 65 84 13 13</p>
+        <div class="store-block__grid">
+          <div class="store-block__content">
+            <h2 class="store-block__title">Votre expert énergétique local à Cabriès</h2>
+            <p class="store-block__text">Retrouvez-nous dans votre magasin Irisolaris Store à Cabriès – Plan de Campagne.</p>
+            <p class="store-block__text">350 Avenue – 13790 Cabriès</p>
+            <p class="store-block__phone">☎ 04 65 84 13 13</p>
+          </div>
+          <div class="store-block__media">
+            <img src="assets/store-interior.webp" alt="Intérieur du magasin Irisolaris Store à Cabriès" width="1024" height="894" loading="lazy">
+          </div>
+        </div>
       </div>
     </div>
   </section>
