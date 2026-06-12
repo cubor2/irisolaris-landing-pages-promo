@@ -263,6 +263,68 @@ a:hover {
     padding: 0.85rem 0;
   }
 
+  .trust-bar__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+    min-height: 3.25rem;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .trust-bar__grid .trust-item {
+    grid-area: 1 / 1;
+    animation: trust-carousel 12s ease-in-out infinite;
+    opacity: 0;
+  }
+
+  .trust-bar__grid .trust-item:nth-child(1) {
+    animation-delay: 0s;
+  }
+
+  .trust-bar__grid .trust-item:nth-child(2) {
+    animation-delay: 4s;
+  }
+
+  .trust-bar__grid .trust-item:nth-child(3) {
+    animation-delay: 8s;
+  }
+}
+
+@keyframes trust-carousel {
+  0% {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+
+  4% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  29% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  33% {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+}
+
+@media (max-width: 639px) and (prefers-reduced-motion: reduce) {
+  .trust-bar__grid .trust-item {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
   .trust-bar__grid .trust-item:not(:first-child) {
     display: none;
   }
