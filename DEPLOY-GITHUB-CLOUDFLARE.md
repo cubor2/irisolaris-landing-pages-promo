@@ -1,79 +1,67 @@
-# GitHub + Cloudflare Pages — déploiement automatique
+# GitHub + Cloudflare Pages — déploiement automatique (3 landing pages)
 
-Oui, c’est **plus simple** à long terme : chaque push sur GitHub redéploie la page automatiquement.
+Chaque push sur `main` reconstruit et déploie les **3 landing pages** sur un seul site Cloudflare.
 
 ---
 
-## Vue d’ensemble
+## Vue d'ensemble
 
 ```
-GitHub (repo)  →  Cloudflare Pages  →  https://iss-pac-climatisation.pages.dev
-     push              build auto
+GitHub (repo)  →  npm run build  →  dist/  →  Cloudflare Pages
+     push            build-site.js              irisolaris-landing-pages-promo.pages.dev
 ```
 
----
+| URL production | Landing |
+|----------------|---------|
+| `/` | PAC Climatisation |
+| `/pac-piscine/` | PAC Piscine |
+| `/centrale-pv/` | Centrale PV |
 
-## Étape 1 — Créer le dépôt GitHub
-
-1. [github.com/new](https://github.com/new)
-2. Nom suggéré : `irisolaris-landing-pages-promo`
-3. **Private** ou **Public** (au choix)
-4. Ne pas cocher « Add README » (le projet existe déjà en local)
-5. Créer le dépôt
+Redirections alias : `/pac-climatisation` → `/`
 
 ---
 
-## Étape 2 — Envoyer le code (première fois)
+## Paramètres Cloudflare Pages (à configurer une fois)
 
-Dans PowerShell, à la racine du projet :
-
-```powershell
-cd "c:\Users\Admin\Desktop\Freelance\IRIS STORE\landing pages promo"
-
-git init
-git add .
-git commit -m "PAC Climatisation v1 — landing promo Irisolaris Store"
-git branch -M main
-git remote add origin https://github.com/cubor2/irisolaris-landing-pages-promo.git
-git push -u origin main
-```
-
-Repo : https://github.com/cubor2/irisolaris-landing-pages-promo
-
-*(Si GitHub demande une auth : Personal Access Token ou GitHub CLI `gh auth login`)*
-
----
-
-## Étape 3 — Relier Cloudflare à GitHub
-
-1. [dash.cloudflare.com](https://dash.cloudflare.com/) → **Workers & Pages** → **Create**
-2. **Pages** → **Connect to Git**
-3. Autoriser Cloudflare sur GitHub → choisir le repo `irisolaris-landing-pages-promo`
-4. Paramètres de build :
+1. [dash.cloudflare.com](https://dash.cloudflare.com/) → **Workers & Pages** → projet lié au repo
+2. **Settings** → **Build & deployments** :
 
 | Champ | Valeur |
 |--------|--------|
 | **Production branch** | `main` |
 | **Framework preset** | None |
-| **Build command** | *(vide)* |
-| **Build output directory** | `pac-climatisation` |
+| **Build command** | `npm run build` |
+| **Build output directory** | `dist` |
 
-5. **Save and Deploy**
+3. **Save** puis **Retry deployment** (ou push sur `main`)
 
----
-
-## URL de test
-
-Après le premier build :
-
-- **Production** : `https://iss-pac-climatisation.pages.dev`  
-  (ou le nom que Cloudflare propose selon le projet Pages)
-
-Chaque `git push` sur `main` → nouveau déploiement en ~1 min.
+> Si le projet s'appelle encore `iss-pac-climatisation` avec output `pac-climatisation`, **mettre à jour** ces deux champs après le push multi-LP.
 
 ---
 
-## Mises à jour suivantes
+## URLs de test
+
+- **PAC Climatisation** : `https://irisolaris-landing-pages-promo.pages.dev/?utm_source=test&utm_medium=manual&utm_campaign=clim-qa`
+- **PAC Piscine** : `https://irisolaris-landing-pages-promo.pages.dev/pac-piscine/?utm_source=test&utm_medium=manual&utm_campaign=piscine-qa`
+- **Centrale PV** : `https://irisolaris-landing-pages-promo.pages.dev/centrale-pv/?utm_source=test&utm_medium=manual&utm_campaign=pv-qa`
+
+---
+
+## Build local
+
+```powershell
+cd "c:\Users\Admin\Desktop\Freelance\IRIS STORE\landing pages promo"
+npm run build
+npx serve dist -l 5500
+```
+
+- Clim : http://localhost:5500/
+- Piscine : http://localhost:5500/pac-piscine/
+- PV : http://localhost:5500/centrale-pv/
+
+---
+
+## Mises à jour
 
 ```powershell
 git add .
@@ -81,28 +69,30 @@ git commit -m "Description de la modification"
 git push
 ```
 
-Cloudflare rebuild tout seul. Plus besoin de `wrangler deploy` ni d’upload manuel.
+Cloudflare rebuild en ~1 min.
 
 ---
 
-## Avantages vs upload / Wrangler seul
+## Déploiement manuel (sans attendre le push)
 
-| | GitHub + Cloudflare | Upload manuel |
-|--|---------------------|---------------|
-| Historique des versions | Oui | Non |
-| Déploiement auto | Oui (push) | Non |
-| Partage avec DSI / client | Repo | Fichiers zip |
-| Rollback | Branches / commits | Difficile |
+```powershell
+.\deploy-preview.ps1
+```
 
----
-
-## Preview branches (optionnel)
-
-Cloudflare Pages peut aussi déployer des **preview URLs** pour chaque branche ou PR — pratique pour valider PAC Piscine / Centrale PV avant `main`.
+Nécessite `npx wrangler login` une fois.
 
 ---
 
-## Fichiers sensibles
+## Structure du build (`build-site.js`)
 
-- `config.js` contient l’URL Apps Script publique (normal pour une LP)
-- Pas de secrets dans le repo si vous n’ajoutez pas de clés API privées
+- Copie `pac-climatisation/` à la racine de `dist/` (chemins absolus `/css/`, `/js/`, `/assets/`)
+- Copie `pac-piscine/` et `centrale-pv/` dans des sous-dossiers avec chemins relatifs dans `index.html`
+- Génère `dist/_redirects` pour les alias d'URL
+
+Les sources restent dans leurs dossiers respectifs ; ne pas éditer `dist/` à la main.
+
+---
+
+## Repo GitHub
+
+https://github.com/cubor2/irisolaris-landing-pages-promo

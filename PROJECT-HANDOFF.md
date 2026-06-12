@@ -1,23 +1,35 @@
-# Irisolaris Store — Landing Pages Promo · Handoff v1
+# Irisolaris Store — Landing Pages Promo · Handoff v2
 
 > Dernière mise à jour : juin 2026  
-> Statut : **PAC Climatisation = v1 livrable** · PAC Piscine & Centrale PV = à décliner
+> Statut : **3 landing pages livrées** (PAC Climatisation · PAC Piscine · Centrale PV)
 
 ---
 
 ## Vue d'ensemble
 
-Projet de landing pages promotionnelles statiques (HTML/CSS/JS) pour Irisolaris Store, livrables à la DSI pour hébergement. Une Google Sheet centralisée collecte les leads et les stats visiteurs via Google Apps Script.
+Projet de landing pages promotionnelles statiques (HTML/CSS/JS) pour Irisolaris Store. Une Google Sheet centralisée collecte les leads et les stats visiteurs via Google Apps Script.
 
-| Landing | Dossier | Statut |
-|---------|---------|--------|
-| PAC Climatisation | `pac-climatisation/` | ✅ v1 prête |
-| PAC Piscine | `pac-piscine/` | ⏳ à créer |
-| Centrale PV | `centrale-pv/` | ⏳ à créer |
+| Landing | Dossier | `landingId` | Statut |
+|---------|---------|-------------|--------|
+| PAC Climatisation | `pac-climatisation/` | `pac-climatisation` | ✅ v1 |
+| PAC Piscine | `pac-piscine/` | `pac-piscine` | ✅ v1 |
+| Centrale PV | `centrale-pv/` | `centrale-pv` | ✅ v1 |
 
 ---
 
-## Ressources partagées (communes aux 3 LPs)
+## URLs production (Cloudflare Pages)
+
+| Landing | URL |
+|---------|-----|
+| PAC Climatisation | `https://irisolaris-landing-pages-promo.pages.dev/` |
+| PAC Piscine | `https://irisolaris-landing-pages-promo.pages.dev/pac-piscine/` |
+| Centrale PV | `https://irisolaris-landing-pages-promo.pages.dev/centrale-pv/` |
+
+Alias : `/pac-climatisation` redirige vers `/`
+
+---
+
+## Ressources partagées
 
 ### Google Sheet
 - **URL** : https://docs.google.com/spreadsheets/d/1BM7ow3NBnbc-ItYQV8czw0cvmjKI36G5tBYac-XnI1c/edit
@@ -26,148 +38,149 @@ Projet de landing pages promotionnelles statiques (HTML/CSS/JS) pour Irisolaris 
 ### Apps Script
 - **Code** : `google-apps-script/Code.gs`
 - **Setup DSI** : `google-apps-script/INSTRUCTIONS.txt`
-- **URL déploiement web (juin 2026)** :
+- **URL déploiement web** :
   ```
   https://script.google.com/macros/s/AKfycbzp_iJPJZQhYEx5_fYY1Lkzhwya2p5vf7PFB0O3mixIXKyygZW5Kjk8uvgYcUi5C87D/exec
   ```
-- **Test obligatoire après chaque déploiement** : ouvrir l'URL `/exec` → doit afficher `{"status":"ok",...}`
+- **Test obligatoire** : ouvrir l'URL `/exec` → `{"status":"ok",...}`
 
-### Fonctions Apps Script utiles
-| Fonction | Rôle |
-|----------|------|
-| `setupAll()` | Réparation complète (Leads, Dashboard, onglets vides) |
-| `repairDashboard()` | Recalcule le Dashboard + colonne d'aide |
-| `repairLeads()` | Corrige le décalage de colonnes Leads |
-| `cleanParasiteLeads()` | Supprime les lignes Leads incomplètes |
-| `cleanDefaultSheets()` | Supprime les onglets vides type « Feuille 1 » |
+### Dashboard
+Colonnes par landing : **PAC Climatisation** · **PAC Piscine** · **Centrale PV** · **Total** · **Comment c'est calculé**
+
+Menu Google Sheet : **ISS Landing Pages** → réinitialisation / recalcul.
 
 ### Charte graphique
 - Fichier : `charte graphique.txt`
 - Couleurs : `#2377ff` · `#06244c` · `#FF610B`
-- Titres : **Korolev Condensed** (fichiers `.otf` dans `Korolev-Font/` → copier vers `assets/fonts/` de chaque LP)
-- Corps : sans-serif système
+- Titres : **Korolev Condensed** (`assets/fonts/` dans chaque LP)
+
+### Contenus source
+- Campagnes visuelles + wordings : `Campagnes/`
+- Fiches produits : `Contenus/infos produits.txt`
 
 ---
 
-## Architecture PAC Climatisation (modèle à répliquer)
+## Contenu par landing
+
+### PAC Climatisation
+- Hero : « Coup de froid sur les prix ! » — **1 690€ TTC** — HEIWA Hyōkō 3
+- Image : `assets/campaign-clim.webp`
+
+### PAC Piscine
+- Hero : « À ce prix-là, plongez ! » — **3 590€** — HEIWA Blue 35 m³
+- Image : `assets/campaign-piscine.webp`
+- Formulaire étape 2 adapté piscine (besoin + équipement actuel)
+
+### Centrale PV
+- Hero : « Payez moins, tous les jours ! » — **6 990€** — ASTRO N7s 455 W
+- Mention 6 kWc dans le disclaimer `*`
+- Image : `assets/campaign-centrale.webp`
+- Formulaire étape 2 adapté PV (projet solaire + situation toiture)
+
+---
+
+## Architecture d'un dossier LP
 
 ```
-pac-climatisation/
+pac-climatisation/   (idem pac-piscine/, centrale-pv/)
 ├── index.html
-├── css/
-│   ├── style.css          # Contenu LP (hero, form, sections)
-│   ├── iss-chrome.css     # Header, footer, nav (commun)
-│   └── cookie-consent.css # Bandeau cookies
-├── js/
-│   ├── config.js          # ⚠️ landingId, landingLabel, sheetWebAppUrl
-│   ├── nav.js
-│   ├── cookie-consent.js  # Consentement localStorage + événement issCookieConsent
-│   ├── stats.js           # Tracking Events (POST, record_type=event)
-│   └── form.js            # Tunnel 4 étapes + envoi Leads (POST, record_type=lead)
-└── assets/
-    ├── fonts/             # Korolev .otf
-    ├── cookie/            # SVG icônes bandeau
-    ├── logo-header.svg
-    ├── logo-footer.svg
-    ├── footer-bg.webp
-    ├── hero-heiwa-clim.webp
-    └── favicon.png
+├── css/             style.css · iss-chrome.css · cookie-consent.css
+├── js/              config.js · nav.js · cookie-consent.js · stats.js · form.js
+├── assets/          fonts · images campagne · produit · logos
+└── _redirects       (utilisé en dev mono-LP ; le build génère dist/_redirects)
 ```
 
-### Ordre des scripts (index.html)
-```html
-config.js → nav.js → cookie-consent.js → stats.js → form.js
+### `config.js` (par LP)
+```javascript
+landingId: "pac-climatisation" | "pac-piscine" | "centrale-pv"
+landingLabel: "PAC Climatisation" | "PAC Piscine" | "Centrale PV"
+sheetWebAppUrl: (identique pour les 3)
 ```
 
-### Flux données
-
+### Scripts (index.html)
 ```
-Visiteur accepte cookies analytics
-  → stats.js envoie record_type=event → onglet Events
-  → pageview, form_start, form_step, session_end, form_complete
-
-Visiteur envoie formulaire complet
-  → form.js envoie record_type=lead → onglet Leads (validation serveur stricte)
-
-Dashboard
-  → valeurs calculées par Apps Script (pas de formules Sheet)
-  → colonne « Comment c'est calculé » pour le client
+config.js → nav.js → cookie-consent.js → stats.js → canvas-confetti → form.js
 ```
 
 ### Tunnel formulaire (4 étapes)
 1. Logement (propriétaire, type, surface, CP)
-2. Besoin (climatisation/chauffage, chauffage actuel)
+2. Besoin (adapté par LP)
 3. Projet (type, délai)
 4. Contact (prénom, nom, tel, email, RGPD)
 
 ---
 
-## Pièges rencontrés en v1 (à ne pas refaire)
+## Build & déploiement
+
+### Build multi-LP
+```powershell
+npm run build          # génère dist/
+npm run preview        # build + serve local sur :5500
+.\deploy-preview.ps1   # build + wrangler deploy
+```
+
+Le script `build-site.js` :
+- Place **PAC Climatisation** à la racine de `dist/`
+- Place **PAC Piscine** et **Centrale PV** dans `dist/pac-piscine/` et `dist/centrale-pv/`
+- Réécrit les chemins HTML en relatifs pour les sous-dossiers
+- Génère `dist/_redirects`
+
+### Cloudflare Pages (GitHub auto-deploy)
+| Champ | Valeur |
+|--------|--------|
+| Build command | `npm run build` |
+| Output directory | `dist` |
+
+Guide complet : **`DEPLOY-GITHUB-CLOUDFLARE.md`**
+
+### Repo GitHub
+https://github.com/cubor2/irisolaris-landing-pages-promo
+
+---
+
+## Preview locale (dossier source)
+
+```powershell
+npx serve pac-climatisation -l 5500
+npx serve pac-piscine -l 5501
+npx serve centrale-pv -l 5502
+```
+
+En mode source, chaque LP utilise des chemins absolus `/css/`, `/js/`, `/assets/` (servir le dossier LP à la racine du serveur).
+
+---
+
+## Pièges connus
 
 | Problème | Cause | Solution |
 |----------|-------|----------|
-| Leads non enregistrés | `fetch` no-cors ne fonctionne pas | POST via iframe cachée |
-| Lignes parasites dans Leads | Ancien script + events mal routés | `record_type` strict event/lead |
-| 0 visiteur au Dashboard | URL `/exec` pas redeployée | Toujours tester `/exec` après deploy |
-| Deux URLs différentes | Nouveau deploy ≠ URL dans config.js | Copier l'URL depuis « Gérer les déploiements » |
-| Colonnes Leads décalées | Migration Session ID mal alignée | `repairLeads()` |
-| Dashboard #NAME? | Formules Sheet locale FR | Calcul côté Apps Script |
-| Taux conversion > 100% | Données de test (leads >> visiteurs) | Normal en dev, se stabilise en prod |
+| CSS/JS cassés en prod | Chemins relatifs au mauvais dossier | Utiliser `npm run build` + `dist/` |
+| LP piscine/PV sans style | Servies hors sous-dossier | URL `/pac-piscine/` ou `/centrale-pv/` |
+| Leads non enregistrés | fetch no-cors | POST via iframe (form.js) |
+| 0 visiteur Dashboard | `/exec` pas redeployé | Tester `/exec` après chaque deploy Apps Script |
+| Colonnes Leads décalées | Migration Session ID | `repairLeads()` |
 
 ---
 
-## Checklist déploiement d'une nouvelle LP
+## Checklist mise en prod
 
-1. [ ] Dupliquer `pac-climatisation/` → `pac-piscine/` ou `centrale-pv/`
-2. [ ] Adapter `config.js` : `landingId`, `landingLabel` (garder la même `sheetWebAppUrl`)
-3. [ ] Adapter contenu `index.html` (hero, textes, images produit)
-4. [ ] Adapter `style.css` si visuels spécifiques (hero image, etc.)
-5. [ ] Réutiliser tel quel : `iss-chrome.css`, `cookie-consent.*`, `nav.js`, `form.js`, `stats.js`
-6. [ ] Vérifier fonts + assets copiés
-7. [ ] Tester en local : cookies → Events tab · formulaire → Leads tab
-8. [ ] Livrer dossier complet à la DSI (inclure `assets/fonts/`)
+1. [ ] `Code.gs` déployé (nouvelle version web Apps Script)
+2. [ ] `repairDashboard()` ou `resetTestData()` si besoin
+3. [ ] Cloudflare : build command `npm run build`, output `dist`
+4. [ ] `git push` sur `main` → vérifier les 3 URLs
+5. [ ] Protocole test dans `google-apps-script/INSTRUCTIONS.txt` (par LP)
 
 ---
 
-## Contenus brief pour les 2 LPs restantes
+## Pistes v2 (hors scope)
 
-### PAC Piscine
-- Accroche : « Des prix qui vont vous faire plonger ! »
-- Produit : HEIWA BLUE 35–115 m³
-- `landingId`: `pac-piscine` · `landingLabel`: `PAC Piscine`
-
-### Centrale PV
-- Accroche : « PAYEZ MOINS, TOUS LES JOURS »
-- Produit : 3–18 kWc
-- `landingId`: `centrale-pv` · `landingLabel`: `Centrale PV`
+- GA4 / GTM (hook `issCookieConsent` prêt dans stats.js)
+- Domaine custom DSI (ex. promo.irisolaris-store.com)
+- Champs formulaire métier supplémentaires par LP
 
 ---
 
-## Déploiement (recommandé : GitHub → Cloudflare)
+## Historique
 
-1. Repo GitHub + push du code
-2. Cloudflare Pages → **Connect to Git** → output dir : `pac-climatisation`
-
-Guide : **`DEPLOY-GITHUB-CLOUDFLARE.md`**
-
-Alternative sans Git : **`DEPLOY-CLOUDFLARE.md`** ou `.\deploy-preview.ps1`
-
----
-
-## Pistes v2 (hors scope v1)
-
-- Intégration GA4 / GTM (hook `issCookieConsent` déjà en place dans stats.js)
-- Hébergement HTTPS DSI (évite les quirks `file://` en test local)
-- Reset stats de test avant mise en prod client
-- Formulaire : champs spécifiques par LP si besoin métier (sinon garder le même tunnel)
-
----
-
-## Historique sessions (résumé)
-
-1. **Structure initiale** — LP PAC Climatisation mobile-first, charte Irisolaris, tunnel multi-étapes
-2. **Header/footer** — Alignement site source, fonts Korolev self-hosted, footer 4 colonnes
-3. **Formulaire** — Validation UX, envoi Sheet via iframe, leads complets uniquement
-4. **Cookies** — Bandeau CookieYes-like, consentement analytics gating stats
-5. **Stats & Dashboard** — Onglets Events/Leads, Dashboard calculé, colonnes d'aide client
-6. **Debug production** — Parasites Leads, décalage colonnes, redeploy `/exec`, URL config mise à jour
+1. **v1** — PAC Climatisation, Sheet + Dashboard, Cloudflare mono-LP
+2. **v2** — PAC Piscine + Centrale PV, Dashboard multi-colonnes, build `dist/` 3-en-1, confetti succès formulaire

@@ -16,7 +16,10 @@ https://docs.google.com/spreadsheets/d/1BM7ow3NBnbc-ItYQV8czw0cvmjKI36G5tBYac-Xn
    - Exécuter en tant que : Moi
    - Qui a accès : Tout le monde
 6. Copier l'URL du déploiement (format .../macros/s/.../exec)
-7. Coller cette URL dans pac-climatisation/js/config.js :
+7. Coller cette URL dans le config.js de chaque LP :
+   pac-climatisation/js/config.js
+   pac-piscine/js/config.js
+   centrale-pv/js/config.js
    sheetWebAppUrl: "https://script.google.com/macros/s/VOTRE_ID/exec"
 
 Important : à chaque modification de Code.gs, créer une nouvelle version
@@ -52,8 +55,16 @@ A. Préparation (5 min)
 
 B. Test tracking visiteur (avec cookies analytics)
 --------------------------------------------------
-URL de test (navigation privée recommandée) :
+URLs de test (navigation privée recommandée) :
+
+PAC Climatisation :
 https://irisolaris-landing-pages-promo.pages.dev/?utm_source=test&utm_medium=manual&utm_campaign=clim-qa
+
+PAC Piscine :
+https://irisolaris-landing-pages-promo.pages.dev/pac-piscine/?utm_source=test&utm_medium=manual&utm_campaign=piscine-qa
+
+Centrale PV :
+https://irisolaris-landing-pages-promo.pages.dev/centrale-pv/?utm_source=test&utm_medium=manual&utm_campaign=pv-qa
 
 [ ] Bandeau cookies → « Tout accepter »
 [ ] Attendre 2-3 secondes, rafraîchir l'onglet Events
@@ -81,8 +92,8 @@ Toujours avec cookies acceptés, remplir les 4 étapes :
   Type logement : Maison
   Surface : 100
   Code postal : 13790
-  Besoin : Climatisation
-  Chauffage actuel : Électrique
+  Besoin : (selon LP — ex. Climatisation / PAC piscine / Installation centrale PV)
+  Chauffage actuel / Situation : (selon LP)
   Type projet : Neuf
   Délai : 1 à 3 mois
   Prénom / Nom / Tél / Email : données de test
@@ -126,9 +137,13 @@ Après les tests B + D (1 visiteur analytics + 1 lead) :
 ----------------------------------------------------------------------
 Structure des onglets
 ----------------------------------------------------------------------
-1. Dashboard — statistiques (valeurs calculées par le script)
+1. Dashboard — statistiques par landing (PAC Climatisation · PAC Piscine ·
+   Centrale PV) + colonne Total + aide « Comment c'est calculé »
 2. Events — tracking visiteurs (consentement cookies analytics requis)
 3. Leads — inscriptions formulaire complètes uniquement
+
+Après mise à jour de Code.gs : exécuter repairDashboard() une fois pour
+afficher les nouvelles colonnes par pack.
 
 ----------------------------------------------------------------------
 Fonctions Apps Script disponibles

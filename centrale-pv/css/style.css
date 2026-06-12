@@ -155,6 +155,10 @@ a:hover {
   padding: 2.5rem 0 3rem;
 }
 
+.hero--campaign.hero--pv {
+  background: linear-gradient(160deg, #041a35 0%, var(--blue-dark) 40%, #2d6cdf 78%, #e89b2e 100%);
+}
+
 .hero--campaign .container--wide {
   width: min(100% - 1.5rem, 1100px);
 }
@@ -936,6 +940,10 @@ body.iss-form-active .iss-footer {
   .hero__visual--campaign img {
     width: min(100%, 420px);
     margin-inline: auto;
+  }
+
+  .hero--campaign.hero--pv .hero__visual--campaign img {
+    width: min(100%, 440px);
   }
 
   .product-spotlight__card {

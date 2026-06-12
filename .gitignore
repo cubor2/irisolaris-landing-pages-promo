@@ -5,6 +5,8 @@ desktop.ini
 .env
 .env.*
 .cursor/
+node_modules/
+dist/
 
 Korolev-Font/
 Korolev-Font.zip
@@ -12,3 +14,5 @@ LP-Store-Brief-01-06.*
 Logo_Irisolaris*
 Desktop-icon-picture.png
 *.ai
+pac-climatisation - Copie/
+pac-climatisation - Copie (2)/

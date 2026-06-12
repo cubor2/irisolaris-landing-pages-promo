@@ -2,8 +2,11 @@ $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $root
 
-Write-Host "Deploiement Cloudflare Pages - PAC Climatisation" -ForegroundColor Cyan
+Write-Host "Build multi-LP → dist/" -ForegroundColor Cyan
+node build-site.js
+
 Write-Host ""
+Write-Host "Deploiement Cloudflare Pages" -ForegroundColor Cyan
 
 $whoami = npx wrangler whoami 2>&1
 if ($whoami -match "not authenticated") {
@@ -11,7 +14,10 @@ if ($whoami -match "not authenticated") {
   npx wrangler login
 }
 
-npx wrangler pages deploy pac-climatisation --project-name=iss-pac-climatisation --branch=preview
+npx wrangler pages deploy dist --project-name=irisolaris-landing-pages-promo --branch=main
 
 Write-Host ""
-Write-Host "URL principale (apres 1er deploy) : https://iss-pac-climatisation.pages.dev" -ForegroundColor Green
+Write-Host "URLs de production :" -ForegroundColor Green
+Write-Host "  PAC Climatisation : https://irisolaris-landing-pages-promo.pages.dev/"
+Write-Host "  PAC Piscine       : https://irisolaris-landing-pages-promo.pages.dev/pac-piscine/"
+Write-Host "  Centrale PV       : https://irisolaris-landing-pages-promo.pages.dev/centrale-pv/"

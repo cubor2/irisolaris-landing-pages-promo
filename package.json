@@ -1,0 +1,8 @@
+{
+  "name": "irisolaris-landing-pages-promo",
+  "private": true,
+  "scripts": {
+    "build": "node build-site.js",
+    "preview": "npm run build && npx serve dist -l 5500"
+  }
+}

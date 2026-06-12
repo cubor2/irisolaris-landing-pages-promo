@@ -45,49 +45,81 @@ var EVENT_HEADERS = [
   "User Agent"
 ];
 
+var LANDING_DEFINITIONS = [
+  { id: "pac-climatisation", label: "PAC Climatisation" },
+  { id: "pac-piscine", label: "PAC Piscine" },
+  { id: "centrale-pv", label: "Centrale PV" }
+];
+
+var LANDING_ID_ALIASES = {
+  "pack-piscine": "pac-piscine"
+};
+
 var DASHBOARD_ROWS = [
   {
     label: "Visiteurs (sessions uniques)",
+    key: "visitors",
+    format: "integer",
     help: "Nombre de visiteurs différents sur la page. Chaque personne est comptée une fois par visite (session). Comptabilisé uniquement si le visiteur accepte les cookies analytics."
   },
   {
     label: "Pages vues",
+    key: "pageviews",
+    format: "integer",
     help: "Nombre total de fois où la page a été ouverte ou rechargée, toutes sessions confondues."
   },
   {
     label: "Temps moyen sur la page (secondes)",
+    key: "avgDuration",
+    format: "integer",
     help: "Durée moyenne passée sur la landing page, calculée au moment où le visiteur quitte la page (fermeture de l'onglet ou navigation ailleurs)."
   },
   {
     label: "Formulaires démarrés",
+    key: "formStarts",
+    format: "integer",
     help: "Nombre de visiteurs ayant commencé à remplir le formulaire (clic ou saisie dans au moins un champ), même s'ils ne l'ont pas envoyé."
   },
   {
     label: "Inscriptions (leads)",
+    key: "leads",
+    format: "integer",
     help: "Nombre de demandes de devis complètes et validées, enregistrées dans l'onglet Leads (formulaire entièrement rempli + consentement RGPD)."
   },
   {
     label: "Taux de conversion",
+    key: "conversion",
+    format: "percent",
     help: "Part des visiteurs devenus leads. Calcul : Inscriptions ÷ Visiteurs. Exemple : 3 inscriptions pour 100 visiteurs = 3 %."
   },
   {
     label: "Taux d'abandon formulaire",
+    key: "formAbandon",
+    format: "percent",
     help: "Part des visiteurs ayant commencé le formulaire sans l'envoyer. Calcul : (Formulaires démarrés − Inscriptions) ÷ Formulaires démarrés."
   },
   {
     label: "Taux de sortie sans formulaire",
+    key: "exitNoForm",
+    format: "percent",
     help: "Part des visiteurs partis sans interagir avec le formulaire. Calcul : (Visiteurs − Formulaires démarrés) ÷ Visiteurs."
   },
   {
     label: "Visites courtes (< 30 s)",
+    key: "shortVisits",
+    format: "integer",
     help: "Nombre de sessions de moins de 30 secondes sur la page. Indique les visites très brèves (consultation rapide ou rebond)."
   },
   {
     label: "Inscriptions (7 derniers jours)",
+    key: "leadsLast7Days",
+    format: "integer",
     help: "Nombre de leads enregistrés sur les 7 derniers jours glissants (à partir d'aujourd'hui)."
   },
   {
     label: "Dernière inscription",
+    key: "lastLeadDate",
+    format: "datetime",
     help: "Date et heure de la demande de devis la plus récente enregistrée dans l'onglet Leads."
   }
 ];
@@ -355,11 +387,23 @@ function ensureEventHeaders_(sheet) {
   sheet.appendRow(EVENT_HEADERS);
 }
 
-function ensureDashboardLayout_(sheet) {
-  var isReady = sheet.getRange("A1").getValue() === "Tableau de bord — Landing Pages Promo" &&
-    sheet.getRange("C4").getValue() === "Comment c'est calculé";
+function getDashboardColumnCount_() {
+  return LANDING_DEFINITIONS.length + 3;
+}
 
-  if (!isReady) {
+function getDashboardHelpColumn_() {
+  return LANDING_DEFINITIONS.length + 3;
+}
+
+function isDashboardLayoutReady_(sheet) {
+  return sheet.getRange("A1").getValue() === "Tableau de bord — Landing Pages Promo" &&
+    sheet.getRange("A4").getValue() === "Indicateur" &&
+    sheet.getRange("B4").getValue() === LANDING_DEFINITIONS[0].label &&
+    sheet.getRange(4, getDashboardHelpColumn_()).getValue() === "Comment c'est calculé";
+}
+
+function ensureDashboardLayout_(sheet) {
+  if (!isDashboardLayoutReady_(sheet)) {
     applyDashboardLayout_(sheet);
   }
 }
@@ -367,40 +411,173 @@ function ensureDashboardLayout_(sheet) {
 function applyDashboardLayout_(sheet) {
   sheet.clear();
 
-  var rows = [
-    ["Tableau de bord — Landing Pages Promo", "", ""],
-    ["Mis à jour automatiquement à partir des onglets Events et Leads", "", ""],
-    ["", "", ""],
-    ["Indicateur", "Valeur", "Comment c'est calculé"]
-  ];
+  var colCount = getDashboardColumnCount_();
+  var header = ["Indicateur"];
+  LANDING_DEFINITIONS.forEach(function (landing) {
+    header.push(landing.label);
+  });
+  header.push("Total");
+  header.push("Comment c'est calculé");
+
+  var rows = [];
+  var titleRow = [];
+  var subtitleRow = [];
+  var spacerRow = [];
+  var i;
+
+  for (i = 0; i < colCount; i++) {
+    titleRow.push("");
+    subtitleRow.push("");
+    spacerRow.push("");
+  }
+
+  titleRow[0] = "Tableau de bord — Landing Pages Promo";
+  subtitleRow[0] = "Mis à jour automatiquement à partir des onglets Events et Leads";
+  rows.push(titleRow);
+  rows.push(subtitleRow);
+  rows.push(spacerRow);
+  rows.push(header.slice());
 
   DASHBOARD_ROWS.forEach(function (item) {
-    rows.push([item.label, "", item.help]);
+    var row = [item.label];
+    var i;
+    for (i = 0; i < LANDING_DEFINITIONS.length + 1; i++) {
+      row.push("");
+    }
+    row.push(item.help);
+    rows.push(row);
   });
 
-  sheet.getRange(1, 1, rows.length, 3).setValues(rows);
-  sheet.getRange("A1:C1").merge();
-  sheet.getRange("A2:C2").merge();
+  sheet.getRange(1, 1, rows.length, colCount).setValues(rows);
+  sheet.getRange(1, 1, 1, colCount).merge();
+  sheet.getRange(2, 1, 2, colCount).merge();
   sheet.getRange("A1").setFontSize(14).setFontWeight("bold");
   sheet.getRange("A2").setFontSize(10).setFontColor("#5a6b7d");
-  sheet.getRange("A4:C4").setFontWeight("bold").setBackground("#f4f7fb");
-  sheet.getRange("C5:C" + rows.length).setFontColor("#5a6b7d").setFontSize(10).setWrap(true);
+  sheet.getRange(4, 1, 4, colCount).setFontWeight("bold").setBackground("#f4f7fb");
+  sheet.getRange(5, getDashboardHelpColumn_(), rows.length, getDashboardHelpColumn_()).setFontColor("#5a6b7d").setFontSize(10).setWrap(true);
   sheet.setColumnWidth(1, 280);
-  sheet.setColumnWidth(2, 120);
-  sheet.setColumnWidth(3, 480);
+
+  LANDING_DEFINITIONS.forEach(function (landing, index) {
+    sheet.setColumnWidth(2 + index, 130);
+  });
+
+  sheet.setColumnWidth(LANDING_DEFINITIONS.length + 2, 100);
+  sheet.setColumnWidth(getDashboardHelpColumn_(), 420);
   sheet.setFrozenRows(4);
+}
+
+function createLandingBucket_() {
+  return {
+    pageviewSessions: {},
+    formStartSessions: {},
+    pageviews: 0,
+    durations: [],
+    shortVisits: 0,
+    leads: 0,
+    leadsLast7Days: 0,
+    lastLeadDate: null
+  };
+}
+
+function normalizeLandingId_(landingId, landingLabel) {
+  var id = String(landingId || "").trim().toLowerCase();
+
+  if (LANDING_ID_ALIASES[id]) {
+    id = LANDING_ID_ALIASES[id];
+  }
+
+  if (id) {
+    for (var i = 0; i < LANDING_DEFINITIONS.length; i++) {
+      if (LANDING_DEFINITIONS[i].id === id) {
+        return LANDING_DEFINITIONS[i].id;
+      }
+    }
+  }
+
+  var label = String(landingLabel || "").trim().toLowerCase();
+  for (var j = 0; j < LANDING_DEFINITIONS.length; j++) {
+    if (LANDING_DEFINITIONS[j].label.toLowerCase() === label) {
+      return LANDING_DEFINITIONS[j].id;
+    }
+  }
+
+  return "";
+}
+
+function applyEventToBucket_(bucket, type, session, duration) {
+  if (type === "pageview") {
+    bucket.pageviews++;
+    if (session) {
+      bucket.pageviewSessions[session] = true;
+    }
+  }
+
+  if (type === "form_start" && session) {
+    bucket.formStartSessions[session] = true;
+  }
+
+  if (type === "session_end" && !isNaN(duration)) {
+    bucket.durations.push(duration);
+    if (duration < 30) {
+      bucket.shortVisits++;
+    }
+  }
+}
+
+function applyLeadToBucket_(bucket, date, sevenDaysAgo) {
+  bucket.leads++;
+
+  if (date instanceof Date) {
+    if (date >= sevenDaysAgo) {
+      bucket.leadsLast7Days++;
+    }
+    if (!bucket.lastLeadDate || date > bucket.lastLeadDate) {
+      bucket.lastLeadDate = date;
+    }
+  }
+}
+
+function finalizeLandingBucket_(bucket) {
+  var visitors = Object.keys(bucket.pageviewSessions).length;
+  var formStarts = Object.keys(bucket.formStartSessions).length;
+  var leads = bucket.leads;
+  var avgDuration = 0;
+
+  if (bucket.durations.length > 0) {
+    var total = bucket.durations.reduce(function (sum, value) {
+      return sum + value;
+    }, 0);
+    avgDuration = Math.round(total / bucket.durations.length);
+  }
+
+  return {
+    visitors: visitors,
+    pageviews: bucket.pageviews,
+    avgDuration: avgDuration,
+    formStarts: formStarts,
+    leads: leads,
+    conversion: visitors > 0 ? leads / visitors : 0,
+    formAbandon: formStarts > 0 ? (formStarts - leads) / formStarts : 0,
+    exitNoForm: visitors > 0 ? (visitors - formStarts) / visitors : 0,
+    shortVisits: bucket.shortVisits,
+    leadsLast7Days: bucket.leadsLast7Days,
+    lastLeadDate: bucket.lastLeadDate
+  };
 }
 
 function computeDashboardMetrics_() {
   var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   var eventsSheet = ss.getSheetByName(EVENTS_SHEET);
   var leadsSheet = ss.getSheetByName(LEADS_SHEET);
+  var buckets = {};
+  var totalBucket = createLandingBucket_();
   var events = [];
-  var pageviewSessions = {};
-  var formStartSessions = {};
-  var pageviews = 0;
-  var durations = [];
-  var shortVisits = 0;
+  var now = new Date();
+  var sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+  LANDING_DEFINITIONS.forEach(function (landing) {
+    buckets[landing.id] = createLandingBucket_();
+  });
 
   if (eventsSheet && eventsSheet.getLastRow() > 1) {
     events = eventsSheet.getRange(2, 1, eventsSheet.getLastRow(), eventsSheet.getLastColumn()).getValues();
@@ -409,82 +586,51 @@ function computeDashboardMetrics_() {
   events.forEach(function (row) {
     var type = String(row[1] || "");
     var session = String(row[2] || "");
+    var landingKey = normalizeLandingId_(row[3], row[4]);
+    var duration = parseFloat(row[5]);
+    var targets = [totalBucket];
 
-    if (type === "pageview") {
-      pageviews++;
-      if (session) {
-        pageviewSessions[session] = true;
-      }
+    if (landingKey && buckets[landingKey]) {
+      targets.push(buckets[landingKey]);
     }
 
-    if (type === "form_start" && session) {
-      formStartSessions[session] = true;
-    }
-
-    if (type === "session_end") {
-      var duration = parseFloat(row[5]);
-      if (!isNaN(duration)) {
-        durations.push(duration);
-        if (duration < 30) {
-          shortVisits++;
-        }
-      }
-    }
+    targets.forEach(function (bucket) {
+      applyEventToBucket_(bucket, type, session, duration);
+    });
   });
-
-  var uniqueVisitors = Object.keys(pageviewSessions).length;
-  var formStarts = Object.keys(formStartSessions).length;
-  var avgDuration = 0;
-
-  if (durations.length > 0) {
-    var total = durations.reduce(function (sum, value) {
-      return sum + value;
-    }, 0);
-    avgDuration = Math.round(total / durations.length);
-  }
-
-  var leadCount = 0;
-  var leadsLast7Days = 0;
-  var lastLeadDate = null;
-  var now = new Date();
-  var sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
   if (leadsSheet && leadsSheet.getLastRow() > 1) {
     var headers = leadsSheet.getRange(1, 1, 1, leadsSheet.getLastColumn()).getValues()[0];
     var emailCol = headers.indexOf("Email");
-    var rows = leadsSheet.getRange(2, 1, leadsSheet.getLastRow(), leadsSheet.getLastColumn()).getValues();
+    var leadRows = leadsSheet.getRange(2, 1, leadsSheet.getLastRow(), leadsSheet.getLastColumn()).getValues();
 
-    rows.forEach(function (row) {
+    leadRows.forEach(function (row) {
       if (emailCol === -1 || !String(row[emailCol] || "").trim()) {
         return;
       }
 
-      leadCount++;
-
+      var landingKey = normalizeLandingId_(row[1], row[2]);
       var date = row[0];
-      if (date instanceof Date) {
-        if (date >= sevenDaysAgo) {
-          leadsLast7Days++;
-        }
-        if (!lastLeadDate || date > lastLeadDate) {
-          lastLeadDate = date;
-        }
+      var targets = [totalBucket];
+
+      if (landingKey && buckets[landingKey]) {
+        targets.push(buckets[landingKey]);
       }
+
+      targets.forEach(function (bucket) {
+        applyLeadToBucket_(bucket, date, sevenDaysAgo);
+      });
     });
   }
 
+  var landings = {};
+  LANDING_DEFINITIONS.forEach(function (landing) {
+    landings[landing.id] = finalizeLandingBucket_(buckets[landing.id]);
+  });
+
   return {
-    visitors: uniqueVisitors,
-    pageviews: pageviews,
-    avgDuration: avgDuration,
-    formStarts: formStarts,
-    leads: leadCount,
-    conversion: uniqueVisitors > 0 ? leadCount / uniqueVisitors : 0,
-    formAbandon: formStarts > 0 ? (formStarts - leadCount) / formStarts : 0,
-    exitNoForm: uniqueVisitors > 0 ? (uniqueVisitors - formStarts) / uniqueVisitors : 0,
-    shortVisits: shortVisits,
-    leadsLast7Days: leadsLast7Days,
-    lastLeadDate: lastLeadDate
+    landings: landings,
+    total: finalizeLandingBucket_(totalBucket)
   };
 }
 
@@ -500,21 +646,31 @@ function refreshDashboardValues_(sheet) {
   ensureDashboardLayout_(sheet);
 
   var metrics = computeDashboardMetrics_();
+  var firstValueCol = 2;
+  var lastValueCol = LANDING_DEFINITIONS.length + 2;
+  var firstRow = 5;
 
-  sheet.getRange("B5").setValue(metrics.visitors);
-  sheet.getRange("B6").setValue(metrics.pageviews);
-  sheet.getRange("B7").setValue(metrics.avgDuration);
-  sheet.getRange("B8").setValue(metrics.formStarts);
-  sheet.getRange("B9").setValue(metrics.leads);
-  sheet.getRange("B10").setValue(metrics.conversion);
-  sheet.getRange("B11").setValue(metrics.formAbandon);
-  sheet.getRange("B12").setValue(metrics.exitNoForm);
-  sheet.getRange("B13").setValue(metrics.shortVisits);
-  sheet.getRange("B14").setValue(metrics.leadsLast7Days);
-  sheet.getRange("B15").setValue(metrics.lastLeadDate || "");
+  DASHBOARD_ROWS.forEach(function (item, index) {
+    var rowNum = firstRow + index;
+    var rowValues = [];
 
-  sheet.getRange("B10:B12").setNumberFormat("0.0%");
-  sheet.getRange("B15").setNumberFormat("dd/mm/yyyy hh:mm");
+    LANDING_DEFINITIONS.forEach(function (landing) {
+      var value = metrics.landings[landing.id][item.key];
+      rowValues.push(value == null ? "" : value);
+    });
+
+    var totalValue = metrics.total[item.key];
+    rowValues.push(totalValue == null ? "" : totalValue);
+    sheet.getRange(rowNum, firstValueCol, rowNum, lastValueCol).setValues([rowValues]);
+
+    if (item.format === "percent") {
+      sheet.getRange(rowNum, firstValueCol, rowNum, lastValueCol).setNumberFormat("0.0%");
+    }
+
+    if (item.format === "datetime") {
+      sheet.getRange(rowNum, firstValueCol, rowNum, lastValueCol).setNumberFormat("dd/mm/yyyy hh:mm");
+    }
+  });
 }
 
 function cleanParasiteLeads() {
@@ -603,6 +759,53 @@ function repairDashboard() {
     applyDashboardLayout_(sheet);
   }
   refreshDashboardValues_();
+}
+
+function clearEventsData_() {
+  var sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(EVENTS_SHEET);
+  if (!sheet) {
+    return 0;
+  }
+
+  var removed = Math.max(0, sheet.getLastRow() - 1);
+  sheet.clear();
+  sheet.appendRow(EVENT_HEADERS);
+  return removed;
+}
+
+function clearLeadsData_() {
+  var sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(LEADS_SHEET);
+  if (!sheet) {
+    return 0;
+  }
+
+  var removed = Math.max(0, sheet.getLastRow() - 1);
+  sheet.clear();
+  sheet.appendRow(LEAD_HEADERS);
+  return removed;
+}
+
+function resetTestData() {
+  ensureWorkbook_();
+  var eventsRemoved = clearEventsData_();
+  var leadsRemoved = clearLeadsData_();
+  repairDashboard();
+
+  return {
+    eventsRemoved: eventsRemoved,
+    leadsRemoved: leadsRemoved,
+    message: "Events et Leads réinitialisés. Dashboard remis à zéro."
+  };
+}
+
+function onOpen() {
+  SpreadsheetApp.getUi()
+    .createMenu("ISS Landing Pages")
+    .addItem("Réinitialiser données de test", "resetTestData")
+    .addItem("Recalculer le Dashboard", "repairDashboard")
+    .addSeparator()
+    .addItem("Réparation complète", "setupAll")
+    .addToUi();
 }
 
 function jsonResponse_(data) {
