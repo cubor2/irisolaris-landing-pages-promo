@@ -75,52 +75,10 @@ var DASHBOARD_ROWS = [
     help: "Durée moyenne passée sur la landing page, calculée au moment où le visiteur quitte la page (fermeture de l'onglet ou navigation ailleurs)."
   },
   {
-    label: "Formulaires démarrés",
-    key: "formStarts",
-    format: "integer",
-    help: "Nombre de visiteurs ayant commencé à remplir le formulaire (clic ou saisie dans au moins un champ), même s'ils ne l'ont pas envoyé."
-  },
-  {
-    label: "Inscriptions (leads)",
-    key: "leads",
-    format: "integer",
-    help: "Nombre de demandes de devis complètes et validées, enregistrées dans l'onglet Leads (formulaire entièrement rempli + consentement RGPD)."
-  },
-  {
-    label: "Taux de conversion",
-    key: "conversion",
-    format: "percent",
-    help: "Part des visiteurs devenus leads. Calcul : Inscriptions ÷ Visiteurs. Exemple : 3 inscriptions pour 100 visiteurs = 3 %."
-  },
-  {
-    label: "Taux d'abandon formulaire",
-    key: "formAbandon",
-    format: "percent",
-    help: "Part des visiteurs ayant commencé le formulaire sans l'envoyer. Calcul : (Formulaires démarrés − Inscriptions) ÷ Formulaires démarrés."
-  },
-  {
-    label: "Taux de sortie sans formulaire",
-    key: "exitNoForm",
-    format: "percent",
-    help: "Part des visiteurs partis sans interagir avec le formulaire. Calcul : (Visiteurs − Formulaires démarrés) ÷ Visiteurs."
-  },
-  {
     label: "Visites courtes (< 30 s)",
     key: "shortVisits",
     format: "integer",
     help: "Nombre de sessions de moins de 30 secondes sur la page. Indique les visites très brèves (consultation rapide ou rebond)."
-  },
-  {
-    label: "Inscriptions (7 derniers jours)",
-    key: "leadsLast7Days",
-    format: "integer",
-    help: "Nombre de leads enregistrés sur les 7 derniers jours glissants (à partir d'aujourd'hui)."
-  },
-  {
-    label: "Dernière inscription",
-    key: "lastLeadDate",
-    format: "datetime",
-    help: "Date et heure de la demande de devis la plus récente enregistrée dans l'onglet Leads."
   }
 ];
 
@@ -396,10 +354,32 @@ function getDashboardHelpColumn_() {
 }
 
 function isDashboardLayoutReady_(sheet) {
-  return sheet.getRange("A1").getValue() === "Tableau de bord — Landing Pages Promo" &&
-    sheet.getRange("A4").getValue() === "Indicateur" &&
-    sheet.getRange("B4").getValue() === LANDING_DEFINITIONS[0].label &&
-    sheet.getRange(4, getDashboardHelpColumn_()).getValue() === "Comment c'est calculé";
+  if (sheet.getRange("A1").getValue() !== "Tableau de bord — Landing Pages Promo") {
+    return false;
+  }
+
+  if (sheet.getRange("A4").getValue() !== "Indicateur") {
+    return false;
+  }
+
+  if (sheet.getRange("B4").getValue() !== LANDING_DEFINITIONS[0].label) {
+    return false;
+  }
+
+  if (sheet.getRange(4, getDashboardHelpColumn_()).getValue() !== "Comment c'est calculé") {
+    return false;
+  }
+
+  if (String(sheet.getRange("A2").getValue()).indexOf("HubSpot") === -1) {
+    return false;
+  }
+
+  var expectedLastRow = 4 + DASHBOARD_ROWS.length;
+  if (sheet.getLastRow() < expectedLastRow) {
+    return false;
+  }
+
+  return sheet.getRange(expectedLastRow, 1).getValue() === DASHBOARD_ROWS[DASHBOARD_ROWS.length - 1].label;
 }
 
 function ensureDashboardLayout_(sheet) {
@@ -432,7 +412,7 @@ function applyDashboardLayout_(sheet) {
   }
 
   titleRow[0] = "Tableau de bord — Landing Pages Promo";
-  subtitleRow[0] = "Mis à jour automatiquement à partir des onglets Events et Leads";
+  subtitleRow[0] = "Statistiques de visite (onglet Events). Les demandes de devis sont gérées dans HubSpot.";
   rows.push(titleRow);
   rows.push(subtitleRow);
   rows.push(spacerRow);
@@ -453,8 +433,8 @@ function applyDashboardLayout_(sheet) {
   sheet.getRange(2, 1, 2, colCount).merge();
   sheet.getRange("A1").setFontSize(14).setFontWeight("bold");
   sheet.getRange("A2").setFontSize(10).setFontColor("#5a6b7d");
-  sheet.getRange(4, 1, 4, colCount).setFontWeight("bold").setBackground("#f4f7fb");
-  sheet.getRange(5, getDashboardHelpColumn_(), rows.length, getDashboardHelpColumn_()).setFontColor("#5a6b7d").setFontSize(10).setWrap(true);
+  sheet.getRange(4, 1, 1, colCount).setFontWeight("bold").setBackground("#f4f7fb");
+  sheet.getRange(5, getDashboardHelpColumn_(), DASHBOARD_ROWS.length, 1).setFontColor("#5a6b7d").setFontSize(10).setWrap(true);
   sheet.setColumnWidth(1, 280);
 
   LANDING_DEFINITIONS.forEach(function (landing, index) {
@@ -647,7 +627,6 @@ function refreshDashboardValues_(sheet) {
 
   var metrics = computeDashboardMetrics_();
   var firstValueCol = 2;
-  var lastValueCol = LANDING_DEFINITIONS.length + 2;
   var firstRow = 5;
 
   DASHBOARD_ROWS.forEach(function (item, index) {
@@ -661,14 +640,15 @@ function refreshDashboardValues_(sheet) {
 
     var totalValue = metrics.total[item.key];
     rowValues.push(totalValue == null ? "" : totalValue);
-    sheet.getRange(rowNum, firstValueCol, rowNum, lastValueCol).setValues([rowValues]);
+    var valueRange = sheet.getRange(rowNum, firstValueCol, 1, rowValues.length);
+    valueRange.setValues([rowValues]);
 
     if (item.format === "percent") {
-      sheet.getRange(rowNum, firstValueCol, rowNum, lastValueCol).setNumberFormat("0.0%");
+      valueRange.setNumberFormat("0.0%");
     }
 
     if (item.format === "datetime") {
-      sheet.getRange(rowNum, firstValueCol, rowNum, lastValueCol).setNumberFormat("dd/mm/yyyy hh:mm");
+      valueRange.setNumberFormat("dd/mm/yyyy hh:mm");
     }
   });
 }

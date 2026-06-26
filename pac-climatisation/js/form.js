@@ -343,6 +343,19 @@
     }
   }
 
+  document.querySelectorAll('[data-scroll="form"]').forEach(function (button) {
+    button.addEventListener("click", function () {
+      if (button.closest("#mobile-cta")) {
+        hideMobileCta();
+      }
+      document.getElementById("devis").scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
+
+  if (!form) {
+    return;
+  }
+
   prevBtn.addEventListener("click", function () {
     if (currentStep > 0) {
       currentStep -= 1;
@@ -370,15 +383,6 @@
 
   form.addEventListener("submit", function (event) {
     event.preventDefault();
-  });
-
-  document.querySelectorAll('[data-scroll="form"]').forEach(function (button) {
-    button.addEventListener("click", function () {
-      if (button.closest("#mobile-cta")) {
-        hideMobileCta();
-      }
-      document.getElementById("devis").scrollIntoView({ behavior: "smooth", block: "start" });
-    });
   });
 
   form.querySelectorAll("input, select, textarea").forEach(function (field) {

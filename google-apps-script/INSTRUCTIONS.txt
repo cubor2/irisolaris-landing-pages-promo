@@ -1,61 +1,56 @@
 CONNEXION GOOGLE SHEET — Irisolaris Store Landing Pages
 ========================================================
 
+Les formulaires de devis sont gérés dans HUBSPOT.
+La Google Sheet sert uniquement aux statistiques de visite (onglet Events + Dashboard).
+
 Feuille cible :
 https://docs.google.com/spreadsheets/d/1BM7ow3NBnbc-ItYQV8czw0cvmjKI36G5tBYac-XnI1c/edit
 
-Étapes :
+----------------------------------------------------------------------
+MISE À JOUR APPS SCRIPT
+----------------------------------------------------------------------
 
 1. Ouvrir la Google Sheet ci-dessus
 2. Extensions > Apps Script
 3. Coller le contenu de Code.gs (remplacer tout le code existant)
 4. Enregistrer le projet
 5. Déployer > Gérer les déploiements > Modifier (crayon) > Nouvelle version > Déployer
-   (ou Nouveau déploiement si première fois)
    - Type : Application Web
    - Exécuter en tant que : Moi
    - Qui a accès : Tout le monde
-6. Copier l'URL du déploiement (format .../macros/s/.../exec)
-7. Coller cette URL dans le config.js de chaque LP :
-   pac-climatisation/js/config.js
-   pac-piscine/js/config.js
-   centrale-pv/js/config.js
-   sheetWebAppUrl: "https://script.google.com/macros/s/VOTRE_ID/exec"
+6. Exécuter repairDashboard() une fois (ou menu « Recalculer le Dashboard »)
 
 Important : à chaque modification de Code.gs, créer une nouvelle version
 du déploiement web (sinon l'ancien code reste actif).
 
+L'URL web app reste dans config.js de chaque LP (stats uniquement) :
+pac-climatisation/js/config.js · pac-piscine/js/config.js · centrale-pv/js/config.js
+
 ----------------------------------------------------------------------
-RÉINITIALISER LES STATS AVANT UN CYCLE DE TESTS
+RÉINITIALISER LES STATS DE TEST
 ----------------------------------------------------------------------
 
-1. Mettre à jour Code.gs dans Apps Script (si pas déjà fait)
-2. Exécuter une fois la fonction resetTestData()
-   - Apps Script > sélectionner resetTestData > Exécuter
-   - Autoriser les permissions si demandé
-3. OU rouvrir la Google Sheet : menu « ISS Landing Pages » >
-   « Réinitialiser données de test »
+Menu « ISS Landing Pages » > « Réinitialiser données de test »
+(ou exécuter resetTestData() dans Apps Script)
 
 Effet :
-- Onglet Events : vidé (en-têtes conservés)
-- Onglet Leads : vidé (en-têtes conservés)
-- Dashboard : remis à zéro avec mise en page propre
+- Onglet Events : vidé
+- Onglet Leads : vidé (historique ancien formulaire)
+- Dashboard : remis à zéro
 
 ----------------------------------------------------------------------
-PROTOCOLE DE TEST COMPLET
+PROTOCOLE DE TEST — STATS VISITEURS
 ----------------------------------------------------------------------
 
-A. Préparation (5 min)
-----------------------
+A. Préparation
+--------------
 [ ] Code.gs déployé en nouvelle version web
-[ ] resetTestData() exécuté → Dashboard à 0 partout
-[ ] Ouvrir l'URL /exec dans le navigateur
-    → doit afficher {"status":"ok","message":"ISS Landing Pages — endpoint actif"}
-[ ] Si erreur « Fonction de script introuvable: doGet » → redeployer
+[ ] repairDashboard() exécuté
+[ ] Ouvrir l'URL /exec → {"status":"ok","message":"ISS Landing Pages — endpoint actif"}
 
-B. Test tracking visiteur (avec cookies analytics)
---------------------------------------------------
-URLs de test (navigation privée recommandée) :
+B. Test par landing (navigation privée, cookies analytics acceptés)
+-------------------------------------------------------------------
 
 PAC Climatisation :
 https://irisolaris-landing-pages-promo.pages.dev/?utm_source=test&utm_medium=manual&utm_campaign=clim-qa
@@ -66,94 +61,40 @@ https://irisolaris-landing-pages-promo.pages.dev/pac-piscine/?utm_source=test&ut
 Centrale PV :
 https://irisolaris-landing-pages-promo.pages.dev/centrale-pv/?utm_source=test&utm_medium=manual&utm_campaign=pv-qa
 
+Pour chaque LP :
 [ ] Bandeau cookies → « Tout accepter »
-[ ] Attendre 2-3 secondes, rafraîchir l'onglet Events
-    → 1 ligne pageview (événement = pageview, Landing = PAC Climatisation)
-[ ] Rester sur la page ~10 s puis fermer l'onglet
-[ ] Rouvrir Events → 1 ligne session_end avec durée (s) renseignée
-[ ] Dashboard :
+[ ] Rafraîchir l'onglet Events → 1 ligne pageview (bonne colonne Landing)
+[ ] Rester ~10 s sur la page puis fermer l'onglet
+[ ] Events → 1 ligne session_end avec durée (s)
+[ ] Dashboard (colonne de la LP) :
     - Visiteurs = 1
     - Pages vues = 1
     - Temps moyen > 0
 
-C. Test tunnel formulaire (events)
-----------------------------------
-Nouvelle fenêtre privée, accepter les cookies :
+C. Test formulaire HubSpot (hors Sheet)
+---------------------------------------
+[ ] Le formulaire embed s'affiche dans le cadre blanc
+[ ] Le bouton hero « Estimer mon projet » scrolle jusqu'au formulaire
+[ ] Soumission test → lead visible dans HubSpot (pas dans l'onglet Leads)
 
-[ ] Cliquer « Estimer mon projet gratuitement » ou scroller jusqu'au formulaire
-[ ] Saisir un champ (ex. code postal) → Events : form_start
-[ ] Cliquer « Continuer » entre les étapes → Events : form_step (étape 2, 3, 4)
-
-D. Test lead complet
---------------------
-Toujours avec cookies acceptés, remplir les 4 étapes :
-
-  Propriétaire : Oui
-  Type logement : Maison
-  Surface : 100
-  Code postal : 13790
-  Besoin : (selon LP — ex. Climatisation / PAC piscine / Installation centrale PV)
-  Chauffage actuel / Situation : (selon LP)
-  Type projet : Neuf
-  Délai : 1 à 3 mois
-  Prénom / Nom / Tél / Email : données de test
-  Consentement RGPD : coché
-
-[ ] Message de succès affiché sur la page
-[ ] Onglet Leads : 1 nouvelle ligne complète (email, téléphone, UTM test)
-[ ] Onglet Events : form_complete
-[ ] Dashboard :
-    - Formulaires démarrés = 1
-    - Inscriptions = 1
-    - Taux de conversion = 100 % (normal avec 1 visiteur / 1 lead en test)
-
-E. Test lead sans cookies analytics
------------------------------------
-Nouvelle fenêtre privée, refuser ou « Continuer sans accepter » :
-
-[ ] Envoyer un formulaire complet
-[ ] Leads : nouvelle ligne enregistrée
-[ ] Events : pas de pageview pour cette session (normal)
-[ ] Dashboard leads : +1, visiteurs inchangés
-
-F. Test rejet lead incomplet (optionnel)
-----------------------------------------
-[ ] Tenter d'envoyer sans cocher RGPD → pas de ligne Leads
-[ ] Vérifier qu'aucune ligne parasite (email/tél vides) n'apparaît dans Leads
-
-G. Validation finale Dashboard
-------------------------------
-Après les tests B + D (1 visiteur analytics + 1 lead) :
-
-  Indicateur                    | Attendu
-  ------------------------------|------------------
-  Visiteurs                     | 1
-  Pages vues                    | 1
-  Formulaires démarrés          | ≥ 1
-  Inscriptions                  | ≥ 1
-  Inscriptions (7 derniers j.)  | ≥ 1
-  Dernière inscription          | date/heure récente
+D. Test sans cookies analytics
+-------------------------------
+[ ] Refuser les cookies → pas de pageview dans Events (normal)
+[ ] Le formulaire HubSpot reste utilisable
 
 ----------------------------------------------------------------------
-Structure des onglets
+STRUCTURE DES ONGLETS
 ----------------------------------------------------------------------
-1. Dashboard — statistiques par landing (PAC Climatisation · PAC Piscine ·
-   Centrale PV) + colonne Total + aide « Comment c'est calculé »
-2. Events — tracking visiteurs (consentement cookies analytics requis)
-3. Leads — inscriptions formulaire complètes uniquement
 
-Après mise à jour de Code.gs : exécuter repairDashboard() une fois pour
-afficher les nouvelles colonnes par pack.
+1. Dashboard — stats visiteurs par LP (4 indicateurs) + Total + aide
+2. Events — pageview, session_end (cookies analytics requis)
+3. Leads — historique ancien formulaire custom (plus alimenté depuis HubSpot)
 
 ----------------------------------------------------------------------
-Fonctions Apps Script disponibles
+FONCTIONS APPS SCRIPT
 ----------------------------------------------------------------------
-- resetTestData()     — vide Events + Leads, Dashboard à zéro (avant tests)
-- setupAll()          — réparation complète (structure + parasites)
-- repairDashboard()   — recalcule le Dashboard + mise en page
-- repairLeads()       — corrige le décalage des colonnes Leads
-- cleanParasiteLeads()— supprime les lignes Leads incomplètes
 
-Note : les stats visiteurs ne sont collectées que si l'utilisateur accepte
-les cookies analytics. Les leads sont toujours enregistrés à la fin du
-formulaire, indépendamment des cookies analytics.
+- resetTestData()      — vide Events + Leads, Dashboard à zéro
+- repairDashboard()    — recalcule le Dashboard + mise en page
+- setupAll()           — réparation complète
+- repairLeads()        — corrige colonnes Leads (historique)

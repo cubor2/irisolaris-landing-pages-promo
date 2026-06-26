@@ -1,19 +1,24 @@
-# Irisolaris Store — Landing Pages Promo · Handoff v2
+# Irisolaris Store — Landing Pages Promo · Handoff v3
 
 > Dernière mise à jour : juin 2026  
-> Statut : **3 landing pages livrées** (PAC Climatisation · PAC Piscine · Centrale PV)
+> Statut : **3 landing pages en production** — formulaires HubSpot · stats visiteurs Google Sheet
 
 ---
 
 ## Vue d'ensemble
 
-Projet de landing pages promotionnelles statiques (HTML/CSS/JS) pour Irisolaris Store. Une Google Sheet centralisée collecte les leads et les stats visiteurs via Google Apps Script.
+Projet de landing pages promotionnelles statiques (HTML/CSS/JS) pour Irisolaris Store.
+
+| Rôle | Outil |
+|------|-------|
+| **Formulaires / leads** | HubSpot (embed par LP) |
+| **Stats visiteurs** | Google Sheet (onglet Events + Dashboard) |
 
 | Landing | Dossier | `landingId` | Statut |
 |---------|---------|-------------|--------|
-| PAC Climatisation | `pac-climatisation/` | `pac-climatisation` | ✅ v1 |
-| PAC Piscine | `pac-piscine/` | `pac-piscine` | ✅ v1 |
-| Centrale PV | `centrale-pv/` | `centrale-pv` | ✅ v1 |
+| PAC Climatisation | `pac-climatisation/` | `pac-climatisation` | ✅ prod |
+| PAC Piscine | `pac-piscine/` | `pac-piscine` | ✅ prod |
+| Centrale PV | `centrale-pv/` | `centrale-pv` | ✅ prod |
 
 ---
 
@@ -29,53 +34,59 @@ Alias : `/pac-climatisation` redirige vers `/`
 
 ---
 
-## Ressources partagées
+## Formulaires HubSpot
 
-### Google Sheet
-- **URL** : https://docs.google.com/spreadsheets/d/1BM7ow3NBnbc-ItYQV8czw0cvmjKI36G5tBYac-XnI1c/edit
-- **Onglets** : `Dashboard` · `Events` · `Leads`
+Portal ID : **8428913**
+
+| Landing | Form ID |
+|---------|---------|
+| PAC Climatisation | `66d613f6-2373-442c-a19d-557d389f30b8` |
+| PAC Piscine | `b32af30a-4c92-4b9e-a055-3861bff00107` |
+| Centrale PV | `40b563c0-0cb6-4cbb-84d0-effbf7b45db1` |
+
+Script commun (dans chaque `index.html`) :
+```html
+<script src="https://js.hsforms.net/forms/embed/8428913.js" defer></script>
+```
+
+Textes des anciens formulaires custom (référence HubSpot) : **`FORMULAIRES-HUBSPOT.txt`**
+
+### Rollback formulaires custom
+
+Branche Git **`backup-formulaires-custom`** — contient les 3 tunnels 4 étapes + envoi Google Sheet.
+
+---
+
+## Google Sheet (stats visiteurs uniquement)
+
+### URL
+https://docs.google.com/spreadsheets/d/1BM7ow3NBnbc-ItYQV8czw0cvmjKI36G5tBYac-XnI1c/edit
+
+### Onglets
+| Onglet | Rôle |
+|--------|------|
+| **Dashboard** | Stats visiteurs par LP (4 indicateurs) |
+| **Events** | pageview, session_end (cookies analytics requis) |
+| **Leads** | Historique ancien formulaire custom (plus alimenté) |
+
+### Dashboard — indicateurs actifs
+- Visiteurs (sessions uniques)
+- Pages vues
+- Temps moyen sur la page (secondes)
+- Visites courtes (< 30 s)
+
+Les leads et taux de conversion sont gérés dans **HubSpot**.
 
 ### Apps Script
 - **Code** : `google-apps-script/Code.gs`
 - **Setup DSI** : `google-apps-script/INSTRUCTIONS.txt`
-- **URL déploiement web** :
+- **URL web app** :
   ```
   https://script.google.com/macros/s/AKfycbzp_iJPJZQhYEx5_fYY1Lkzhwya2p5vf7PFB0O3mixIXKyygZW5Kjk8uvgYcUi5C87D/exec
   ```
-- **Test obligatoire** : ouvrir l'URL `/exec` → `{"status":"ok",...}`
+- Après chaque modif `Code.gs` : nouvelle version web + `repairDashboard()`
 
-### Dashboard
-Colonnes par landing : **PAC Climatisation** · **PAC Piscine** · **Centrale PV** · **Total** · **Comment c'est calculé**
-
-Menu Google Sheet : **ISS Landing Pages** → réinitialisation / recalcul.
-
-### Charte graphique
-- Fichier : `charte graphique.txt`
-- Couleurs : `#2377ff` · `#06244c` · `#FF610B`
-- Titres : **Korolev Condensed** (`assets/fonts/` dans chaque LP)
-
-### Contenus source
-- Campagnes visuelles + wordings : `Campagnes/`
-- Fiches produits : `Contenus/infos produits.txt`
-
----
-
-## Contenu par landing
-
-### PAC Climatisation
-- Hero : « Coup de froid sur les prix ! » — **1 690€ TTC** — HEIWA Hyōkō 3
-- Image : `assets/campaign-clim.webp`
-
-### PAC Piscine
-- Hero : « À ce prix-là, plongez ! » — **3 590€** — HEIWA Blue 35 m³
-- Image : `assets/campaign-piscine.webp`
-- Formulaire étape 2 adapté piscine (besoin + équipement actuel)
-
-### Centrale PV
-- Hero : « Payez moins, tous les jours ! » — **6 990€** — ASTRO N7s 455 W
-- Mention 6 kWc dans le disclaimer `*`
-- Image : `assets/campaign-centrale.webp`
-- Formulaire étape 2 adapté PV (projet solaire + situation toiture)
+Menu Sheet : **ISS Landing Pages** → réinitialisation / recalcul.
 
 ---
 
@@ -83,104 +94,54 @@ Menu Google Sheet : **ISS Landing Pages** → réinitialisation / recalcul.
 
 ```
 pac-climatisation/   (idem pac-piscine/, centrale-pv/)
-├── index.html
-├── css/             style.css · iss-chrome.css · cookie-consent.css
-├── js/              config.js · nav.js · cookie-consent.js · stats.js · form.js
-├── assets/          fonts · images campagne · produit · logos
-└── _redirects       (utilisé en dev mono-LP ; le build génère dist/_redirects)
-```
-
-### `config.js` (par LP)
-```javascript
-landingId: "pac-climatisation" | "pac-piscine" | "centrale-pv"
-landingLabel: "PAC Climatisation" | "PAC Piscine" | "Centrale PV"
-sheetWebAppUrl: (identique pour les 3)
+├── index.html       # embed HubSpot dans #form-panel
+├── css/
+├── js/
+│   ├── config.js    # landingId, sheetWebAppUrl (stats)
+│   ├── stats.js     # pageview / session_end → Sheet
+│   └── form.js      # scroll CTA vers #devis (garde-fou si pas de #lead-form)
+└── assets/
 ```
 
 ### Scripts (index.html)
 ```
-config.js → nav.js → cookie-consent.js → stats.js → canvas-confetti → form.js
+config.js → nav.js → cookie-consent.js → stats.js → form.js → script HubSpot
 ```
-
-### Tunnel formulaire (4 étapes)
-1. Logement (propriétaire, type, surface, CP)
-2. Besoin (adapté par LP)
-3. Projet (type, délai)
-4. Contact (prénom, nom, tel, email, RGPD)
 
 ---
 
 ## Build & déploiement
 
-### Build multi-LP
 ```powershell
 npm run build          # génère dist/
-npm run preview        # build + serve local sur :5500
-.\deploy-preview.ps1   # build + wrangler deploy
+npm run preview        # build + serve local :5500
+.\deploy-preview.ps1   # build + wrangler deploy manuel
 ```
 
-Le script `build-site.js` :
-- Place **PAC Climatisation** à la racine de `dist/`
-- Place **PAC Piscine** et **Centrale PV** dans `dist/pac-piscine/` et `dist/centrale-pv/`
-- Réécrit les chemins HTML en relatifs pour les sous-dossiers
-- Génère `dist/_redirects`
-
-### Cloudflare Pages (GitHub auto-deploy)
+Cloudflare Pages (auto sur `git push main`) :
 | Champ | Valeur |
 |--------|--------|
 | Build command | `npm run build` |
 | Output directory | `dist` |
 
-Guide complet : **`DEPLOY-GITHUB-CLOUDFLARE.md`**
+Guide : **`DEPLOY-GITHUB-CLOUDFLARE.md`**
 
-### Repo GitHub
-https://github.com/cubor2/irisolaris-landing-pages-promo
-
----
-
-## Preview locale (dossier source)
-
-```powershell
-npx serve pac-climatisation -l 5500
-npx serve pac-piscine -l 5501
-npx serve centrale-pv -l 5502
-```
-
-En mode source, chaque LP utilise des chemins absolus `/css/`, `/js/`, `/assets/` (servir le dossier LP à la racine du serveur).
-
----
-
-## Pièges connus
-
-| Problème | Cause | Solution |
-|----------|-------|----------|
-| CSS/JS cassés en prod | Chemins relatifs au mauvais dossier | Utiliser `npm run build` + `dist/` |
-| LP piscine/PV sans style | Servies hors sous-dossier | URL `/pac-piscine/` ou `/centrale-pv/` |
-| Leads non enregistrés | fetch no-cors | POST via iframe (form.js) |
-| 0 visiteur Dashboard | `/exec` pas redeployé | Tester `/exec` après chaque deploy Apps Script |
-| Colonnes Leads décalées | Migration Session ID | `repairLeads()` |
+Repo : https://github.com/cubor2/irisolaris-landing-pages-promo
 
 ---
 
 ## Checklist mise en prod
 
 1. [ ] `Code.gs` déployé (nouvelle version web Apps Script)
-2. [ ] `repairDashboard()` ou `resetTestData()` si besoin
-3. [ ] Cloudflare : build command `npm run build`, output `dist`
-4. [ ] `git push` sur `main` → vérifier les 3 URLs
-5. [ ] Protocole test dans `google-apps-script/INSTRUCTIONS.txt` (par LP)
-
----
-
-## Pistes v2 (hors scope)
-
-- GA4 / GTM (hook `issCookieConsent` prêt dans stats.js)
-- Domaine custom DSI (ex. promo.irisolaris-store.com)
-- Champs formulaire métier supplémentaires par LP
+2. [ ] `repairDashboard()` exécuté une fois
+3. [ ] `git push` sur `main` → Cloudflare rebuild
+4. [ ] Vérifier les 3 URLs + formulaires HubSpot
+5. [ ] Test stats visiteurs (voir `INSTRUCTIONS.txt`)
 
 ---
 
 ## Historique
 
-1. **v1** — PAC Climatisation, Sheet + Dashboard, Cloudflare mono-LP
-2. **v2** — PAC Piscine + Centrale PV, Dashboard multi-colonnes, build `dist/` 3-en-1, confetti succès formulaire
+1. **v1** — PAC Climatisation, formulaire custom → Sheet, Cloudflare mono-LP
+2. **v2** — 3 LPs, Dashboard multi-colonnes, build `dist/` unifié
+3. **v3** — Formulaires HubSpot, Dashboard stats visiteurs seules, carrousel mobile trust bar

@@ -1,0 +1,136 @@
+﻿EXPORT DES TEXTES DES FORMULAIRES — Irisolaris Store
+
+Tunnel en 4 étapes. Les étapes 1, 3 et 4 sont identiques sur les 3 landing pages.
+Seule l'étape 2 change selon le produit.
+
+
+===========================================================
+TEXTES COMMUNS AUX 3 FORMULAIRES
+===========================================================
+
+En-tête du formulaire
+Recevez votre devis personnalisé
+Quelques questions pour que nos experts puissent vous rappeler avec une proposition adaptée à votre projet.
+
+
+--- ÉTAPE 1 — Votre logement ---
+Ces informations nous aident à dimensionner la solution idéale.
+(Centrale PV : Ces informations nous aident à dimensionner votre centrale photovoltaïque.)
+
+Êtes-vous propriétaire ?
+Oui
+Non
+
+Type de logement
+Sélectionnez…
+Appartement
+Maison individuelle
+
+Surface (m²)
+Ex. 90
+
+Code postal
+Ex. 13790
+
+
+--- ÉTAPE 3 — Votre projet ---
+Pour mieux organiser votre prise en charge commerciale.
+
+Type de projet
+Sélectionnez…
+Rénovation
+Construction neuve
+Remplacement d'équipement
+
+Quand souhaitez-vous avancer ?
+Sélectionnez…
+Dès que possible
+Sous 3 mois
+Sous 6 mois
+Je me renseigne
+
+
+--- ÉTAPE 4 — Vos coordonnées ---
+Un conseiller Irisolaris Store vous rappelle pour finaliser votre devis.
+
+Prénom
+Nom
+Téléphone
+06 12 34 56 78
+Email
+vous@exemple.fr
+
+J'accepte que mes données soient utilisées par Irisolaris Store pour être recontacté(e) dans le cadre de mon projet. Consultez notre politique de confidentialité.
+
+
+--- BOUTONS ET PROGRESSION ---
+Continuer
+Retour
+Étape 1 sur 4
+
+
+--- MESSAGE DE CONFIRMATION ---
+Demande envoyée !
+Merci pour votre confiance. Un conseiller Irisolaris Store vous contactera très prochainement pour affiner votre projet et vous transmettre votre devis personnalisé.
+Appeler le 04 65 84 13 13
+
+
+===========================================================
+ÉTAPE 2 — SPÉCIFIQUE À CHAQUE LANDING PAGE
+===========================================================
+
+--- PAC CLIMATISATION — Étape 2 « Votre besoin » ---
+Dites-nous ce que vous souhaitez installer ou remplacer.
+
+Quel est votre besoin principal ?
+Sélectionnez…
+Climatisation
+Chauffage
+Climatisation et chauffage
+
+Chauffage actuel
+Sélectionnez…
+Gaz
+Fioul
+Électrique
+Pompe à chaleur
+Autre / Je ne sais pas
+
+
+--- PAC PISCINE — Étape 2 « Votre piscine » ---
+Dites-nous ce que vous souhaitez chauffer ou équiper.
+
+Quel est votre besoin principal ?
+Sélectionnez…
+PAC piscine
+Chauffage de piscine
+Rafraîchissement de piscine
+Remplacement d'une PAC piscine
+
+Équipement actuel
+Sélectionnez…
+Aucun chauffage
+Échangeur thermique
+PAC piscine existante
+Réchauffeur électrique
+Autre / Je ne sais pas
+
+
+--- CENTRALE PV — Étape 2 « Votre projet solaire » ---
+Dites-nous ce que vous souhaitez installer ou remplacer.
+
+Quel est votre besoin principal ?
+Sélectionnez…
+Installation centrale PV
+Autoconsommation
+Revente du surplus
+Remplacement d'une centrale existante
+
+Situation actuelle
+Sélectionnez…
+Aucune installation solaire
+Toiture tuiles
+Toiture ardoises
+Toiture plate
+Centrale existante à remplacer
+Autre / Je ne sais pas
