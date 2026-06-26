@@ -1,45 +1,45 @@
-# Hébergement des landing pages promo — Guide pour le service IT
+# HÃ©bergement des landing pages promo â€” Guide pour le service IT
 
 **Destinataire :** service informatique Irisolaris
-**Objet :** héberger 3 landing pages statiques et les publier sur des sous-domaines de `irisolaris-store.com`
+**Objet :** hÃ©berger 3 landing pages statiques et les publier sur des sous-domaines de `irisolaris-store.com`
 
 ---
 
 ## 1. Ce que vous recevez
 
-Trois dossiers indépendants, 100 % statiques (HTML/CSS/JS, aucune base de données, aucun backend à installer) :
+Trois dossiers indÃ©pendants, 100 % statiques (HTML/CSS/JS, aucune base de donnÃ©es, aucun backend Ã  installer) :
 
 ```
-pac-climatisation/     ? landing « PAC Climatisation »
-pac-piscine/           ? landing « PAC Piscine »
-centrale-pv/           ? landing « Centrale PV »
+pac-climatisation/     ? landing Â« PAC Climatisation Â»
+pac-piscine/           ? landing Â« PAC Piscine Â»
+centrale-pv/           ? landing Â« Centrale PV Â»
 ```
 
-Chaque dossier est **autonome** et contient tout le nécessaire :
+Chaque dossier est **autonome** et contient tout le nÃ©cessaire :
 
 ```
 pac-climatisation/
 ??? index.html
 ??? css/        (style.css, iss-chrome.css, cookie-consent.css)
 ??? js/         (config.js, nav.js, cookie-consent.js, stats.js, form.js)
-??? assets/     (images .webp/.png, polices .otf, icônes .svg, favicon)
+??? assets/     (images .webp/.png, polices .otf, icÃ´nes .svg, favicon)
 ```
 
-> Les autres fichiers du dépôt (`dist/`, `build-site.js`, `_redirects`, `*.md`, `google-apps-script/`) sont des outils internes **à ignorer** pour l'hébergement.
+> Les autres fichiers du dÃ©pÃ´t (`dist/`, `build-site.js`, `_redirects`, `*.md`, `google-apps-script/`) sont des outils internes **Ã  ignorer** pour l'hÃ©bergement.
 
 ---
 
-## 2. Modèle recommandé : 1 sous-domaine = 1 dossier
+## 2. ModÃ¨le recommandÃ© : 1 sous-domaine = 1 dossier
 
-| Sous-domaine (à créer) | Contenu servi (racine du site) |
+| Sous-domaine (Ã  crÃ©er) | Contenu servi (racine du site) |
 |------------------------|--------------------------------|
 | `clim.irisolaris-store.com` | contenu du dossier `pac-climatisation/` |
 | `piscine.irisolaris-store.com` | contenu du dossier `pac-piscine/` |
 | `pv.irisolaris-store.com` | contenu du dossier `centrale-pv/` |
 
-> Les noms de sous-domaines sont indicatifs : adaptez-les à votre convention. L'important est **qu'un dossier soit servi à la racine de son sous-domaine**.
+> Les noms de sous-domaines sont indicatifs : adaptez-les Ã  votre convention. L'important est **qu'un dossier soit servi Ã  la racine de son sous-domaine**.
 
-**Pourquoi à la racine ?** Les pages utilisent des chemins absolus (`/css/…`, `/js/…`, `/assets/…`). Le contenu de chaque dossier doit donc être déposé **directement à la racine** du sous-domaine, par exemple :
+**Pourquoi Ã  la racine ?** Les pages utilisent des chemins absolus (`/css/â€¦`, `/js/â€¦`, `/assets/â€¦`). Le contenu de chaque dossier doit donc Ãªtre dÃ©posÃ© **directement Ã  la racine** du sous-domaine, par exemple :
 
 ```
 clim.irisolaris-store.com  ?  /var/www/clim/
@@ -49,40 +49,40 @@ clim.irisolaris-store.com  ?  /var/www/clim/
    ??? assets/
 ```
 
-`https://clim.irisolaris-store.com/css/style.css` doit répondre 200.
+`https://clim.irisolaris-store.com/css/style.css` doit rÃ©pondre 200.
 
 ---
 
-## 3. Pas à pas
+## 3. Pas Ã  pas
 
-### Étape 1 — Créer les sous-domaines (DNS)
-Créer 3 enregistrements DNS (A / AAAA ou CNAME) pointant vers votre hébergement web :
+### Ã‰tape 1 â€” CrÃ©er les sous-domaines (DNS)
+CrÃ©er 3 enregistrements DNS (A / AAAA ou CNAME) pointant vers votre hÃ©bergement web :
 - `clim` ? serveur web
 - `piscine` ? serveur web
 - `pv` ? serveur web
 
-### Étape 2 — Déposer les fichiers
-Copier **le contenu** de chaque dossier (et non le dossier lui-même) dans la racine web du sous-domaine correspondant.
+### Ã‰tape 2 â€” DÃ©poser les fichiers
+Copier **le contenu** de chaque dossier (et non le dossier lui-mÃªme) dans la racine web du sous-domaine correspondant.
 
-### Étape 3 — Activer HTTPS
+### Ã‰tape 3 â€” Activer HTTPS
 Installer un certificat SSL pour chaque sous-domaine (Let's Encrypt ou certificat wildcard `*.irisolaris-store.com`). **HTTPS est obligatoire** (voir points d'attention).
 
-### Étape 4 — Forcer le HTTPS et le `www`? non applicable
+### Ã‰tape 4 â€” Forcer le HTTPS et le `www`? non applicable
 - Rediriger `http://` ? `https://` sur chaque sous-domaine.
-- Définir `index.html` comme document par défaut.
+- DÃ©finir `index.html` comme document par dÃ©faut.
 
-### Étape 5 — Vérifier
-Ouvrir chaque sous-domaine en HTTPS et dérouler la checklist (section 6).
+### Ã‰tape 5 â€” VÃ©rifier
+Ouvrir chaque sous-domaine en HTTPS et dÃ©rouler la checklist (section 6).
 
 ---
 
 ## 4. Configuration serveur
 
-### Document par défaut
+### Document par dÃ©faut
 `index.html`
 
-### Types MIME à servir correctement
-Vérifier que ces extensions sont servies avec le bon `Content-Type` (souvent OK par défaut, mais `.webp` et `.otf` manquent parfois sur d'anciennes configs) :
+### Types MIME Ã  servir correctement
+VÃ©rifier que ces extensions sont servies avec le bon `Content-Type` (souvent OK par dÃ©faut, mais `.webp` et `.otf` manquent parfois sur d'anciennes configs) :
 
 | Extension | Content-Type |
 |-----------|--------------|
@@ -106,50 +106,50 @@ AddType image/webp .webp
 AddType font/otf .otf
 ```
 
-### Cache (recommandé, optionnel)
+### Cache (recommandÃ©, optionnel)
 Mettre en cache long les assets versionnables (`/assets/`, `/css/`, `/js/`) et court le `index.html`.
 
 ---
 
 ## 5. Redirections
 
-Dans le modèle « 1 sous-domaine = 1 dossier », **aucune redirection interne n'est nécessaire**. Le fichier `_redirects` présent dans les dossiers est spécifique à notre plateforme de test (Cloudflare) et peut être **ignoré / supprimé**.
+Dans le modÃ¨le Â« 1 sous-domaine = 1 dossier Â», **aucune redirection interne n'est nÃ©cessaire**. Le fichier `_redirects` prÃ©sent dans les dossiers est spÃ©cifique Ã  notre plateforme de test (Cloudflare) et peut Ãªtre **ignorÃ© / supprimÃ©**.
 
-Redirections utiles à mettre en place de votre côté :
+Redirections utiles Ã  mettre en place de votre cÃ´tÃ© :
 - `http://` ? `https://` (chaque sous-domaine)
-- éventuellement, des liens depuis le site principal (boutons campagne) vers les sous-domaines.
+- Ã©ventuellement, des liens depuis le site principal (boutons campagne) vers les sous-domaines.
 
 ---
 
 ## 6. Points d'attention
 
-1. **HTTPS obligatoire.** Le formulaire (HubSpot) et les polices se chargent en HTTPS. En HTTP, le navigateur bloquerait des contenus (« mixed content ») et le formulaire ne s'afficherait pas.
+1. **HTTPS obligatoire.** Le formulaire (HubSpot) et les polices se chargent en HTTPS. En HTTP, le navigateur bloquerait des contenus (Â« mixed content Â») et le formulaire ne s'afficherait pas.
 
 2. **Formulaire HubSpot (script externe).** Chaque page charge le script `https://js.hsforms.net/forms/embed/8428913.js`.
-   - Le serveur n'a rien à installer, mais le **navigateur du visiteur** doit pouvoir joindre HubSpot.
+   - Le serveur n'a rien Ã  installer, mais le **navigateur du visiteur** doit pouvoir joindre HubSpot.
    - Si vous appliquez une **Content-Security-Policy (CSP)**, autorisez au minimum :
      `js.hsforms.net`, `*.hsforms.net`, `*.hsforms.com`, `*.hs-sites.com`, `*.hubspot.com`, `forms.hsforms.com`.
-   - Les soumissions de formulaire partent directement vers HubSpot (pas de traitement côté serveur).
+   - Les soumissions de formulaire partent directement vers HubSpot (pas de traitement cÃ´tÃ© serveur).
 
-3. **Casse des noms de fichiers (Linux).** Sur serveur Linux, les noms sont sensibles à la casse. Déposer les fichiers **tels quels** sans renommer (ex. `style.css`, pas `Style.css`).
+3. **Casse des noms de fichiers (Linux).** Sur serveur Linux, les noms sont sensibles Ã  la casse. DÃ©poser les fichiers **tels quels** sans renommer (ex. `style.css`, pas `Style.css`).
 
-4. **Chemins absolus = hébergement à la racine.** Si une page est servie dans un sous-répertoire (ex. `irisolaris-store.com/clim/`) au lieu d'un sous-domaine racine, le CSS/JS ne se chargera pas. ? privilégier le modèle sous-domaine, ou nous prévenir pour adapter les chemins.
+4. **Chemins absolus = hÃ©bergement Ã  la racine.** Si une page est servie dans un sous-rÃ©pertoire (ex. `irisolaris-store.com/clim/`) au lieu d'un sous-domaine racine, le CSS/JS ne se chargera pas. ? privilÃ©gier le modÃ¨le sous-domaine, ou nous prÃ©venir pour adapter les chemins.
 
-5. **Statistiques de visite (optionnel, déjà intégré).** Les pages envoient des stats anonymes de fréquentation vers un Google Apps Script (`script.google.com`). Cela fonctionne sans action de votre part. Si une CSP stricte est en place, autoriser `script.google.com` et `script.googleusercontent.com` (sinon seules les stats de visite sont perdues, le reste fonctionne).
+5. **Statistiques de visite (optionnel, dÃ©jÃ  intÃ©grÃ©).** Les pages envoient des stats anonymes de frÃ©quentation vers un Google Apps Script (`script.google.com`). Cela fonctionne sans action de votre part. Si une CSP stricte est en place, autoriser `script.google.com` et `script.googleusercontent.com` (sinon seules les stats de visite sont perdues, le reste fonctionne).
 
-6. **Cookies / RGPD.** Un bandeau de consentement est intégré aux pages (gestion locale, pas de serveur requis).
+6. **Cookies / RGPD.** Un bandeau de consentement est intÃ©grÃ© aux pages (gestion locale, pas de serveur requis).
 
-7. **Pas de page 404 dédiée.** Sites mono-page : une URL inconnue renverra le 404 par défaut du serveur. Optionnel : rediriger les 404 vers `index.html`.
+7. **Pas de page 404 dÃ©diÃ©e.** Sites mono-page : une URL inconnue renverra le 404 par dÃ©faut du serveur. Optionnel : rediriger les 404 vers `index.html`.
 
 ---
 
 ## 7. Checklist de validation (par sous-domaine)
 
 - [ ] `https://<sous-domaine>/` affiche la page avec styles et images
-- [ ] Cadenas HTTPS valide (pas d'avertissement « mixed content »)
+- [ ] Cadenas HTTPS valide (pas d'avertissement Â« mixed content Â»)
 - [ ] Le formulaire de devis s'affiche dans le cadre blanc (chargement HubSpot OK)
-- [ ] Le bouton « Estimer mon projet » fait défiler jusqu'au formulaire
-- [ ] Polices d'écriture correctes (titres en Korolev Condensed)
+- [ ] Le bouton Â« Estimer mon projet Â» fait dÃ©filer jusqu'au formulaire
+- [ ] Polices d'Ã©criture correctes (titres en Korolev Condensed)
 - [ ] `http://<sous-domaine>/` redirige bien vers `https://`
 - [ ] Test mobile : mise en page responsive OK
 
@@ -157,4 +157,4 @@ Redirections utiles à mettre en place de votre côté :
 
 ## 8. Contacts / questions
 
-Pour toute adaptation (hébergement en sous-répertoire plutôt qu'en sous-domaine, changement de noms de fichiers, CSP spécifique), nous contacter avant mise en ligne — l'ajustement est rapide côté code.
+Pour toute adaptation (hÃ©bergement en sous-rÃ©pertoire plutÃ´t qu'en sous-domaine, changement de noms de fichiers, CSP spÃ©cifique), nous contacter avant mise en ligne â€” l'ajustement est rapide cÃ´tÃ© code.
