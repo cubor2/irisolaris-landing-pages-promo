@@ -1,0 +1,100 @@
+CONNEXION GOOGLE SHEET — Irisolaris Store Landing Pages
+========================================================
+
+Les formulaires de devis sont gérés dans HUBSPOT.
+La Google Sheet sert uniquement aux statistiques de visite (onglet Events + Dashboard).
+
+Feuille cible :
+https://docs.google.com/spreadsheets/d/1BM7ow3NBnbc-ItYQV8czw0cvmjKI36G5tBYac-XnI1c/edit
+
+----------------------------------------------------------------------
+MISE À JOUR APPS SCRIPT
+----------------------------------------------------------------------
+
+1. Ouvrir la Google Sheet ci-dessus
+2. Extensions > Apps Script
+3. Coller le contenu de Code.gs (remplacer tout le code existant)
+4. Enregistrer le projet
+5. Déployer > Gérer les déploiements > Modifier (crayon) > Nouvelle version > Déployer
+   - Type : Application Web
+   - Exécuter en tant que : Moi
+   - Qui a accès : Tout le monde
+6. Exécuter repairDashboard() une fois (ou menu « Recalculer le Dashboard »)
+
+Important : à chaque modification de Code.gs, créer une nouvelle version
+du déploiement web (sinon l'ancien code reste actif).
+
+L'URL web app reste dans config.js de chaque LP (stats uniquement) :
+pac-climatisation/js/config.js · pac-piscine/js/config.js · centrale-pv/js/config.js
+
+----------------------------------------------------------------------
+RÉINITIALISER LES STATS DE TEST
+----------------------------------------------------------------------
+
+Menu « ISS Landing Pages » > « Réinitialiser données de test »
+(ou exécuter resetTestData() dans Apps Script)
+
+Effet :
+- Onglet Events : vidé
+- Onglet Leads : vidé (historique ancien formulaire)
+- Dashboard : remis à zéro
+
+----------------------------------------------------------------------
+PROTOCOLE DE TEST — STATS VISITEURS
+----------------------------------------------------------------------
+
+A. Préparation
+--------------
+[ ] Code.gs déployé en nouvelle version web
+[ ] repairDashboard() exécuté
+[ ] Ouvrir l'URL /exec → {"status":"ok","message":"ISS Landing Pages — endpoint actif"}
+
+B. Test par landing (navigation privée, cookies analytics acceptés)
+-------------------------------------------------------------------
+
+PAC Climatisation :
+https://irisolaris-landing-pages-promo.pages.dev/?utm_source=test&utm_medium=manual&utm_campaign=clim-qa
+
+PAC Piscine :
+https://irisolaris-landing-pages-promo.pages.dev/pac-piscine/?utm_source=test&utm_medium=manual&utm_campaign=piscine-qa
+
+Centrale PV :
+https://irisolaris-landing-pages-promo.pages.dev/centrale-pv/?utm_source=test&utm_medium=manual&utm_campaign=pv-qa
+
+Pour chaque LP :
+[ ] Bandeau cookies → « Tout accepter »
+[ ] Rafraîchir l'onglet Events → 1 ligne pageview (bonne colonne Landing)
+[ ] Rester ~10 s sur la page puis fermer l'onglet
+[ ] Events → 1 ligne session_end avec durée (s)
+[ ] Dashboard (colonne de la LP) :
+    - Visiteurs = 1
+    - Pages vues = 1
+    - Temps moyen > 0
+
+C. Test formulaire HubSpot (hors Sheet)
+---------------------------------------
+[ ] Le formulaire embed s'affiche dans le cadre blanc
+[ ] Le bouton hero « Estimer mon projet » scrolle jusqu'au formulaire
+[ ] Soumission test → lead visible dans HubSpot (pas dans l'onglet Leads)
+
+D. Test sans cookies analytics
+-------------------------------
+[ ] Refuser les cookies → pas de pageview dans Events (normal)
+[ ] Le formulaire HubSpot reste utilisable
+
+----------------------------------------------------------------------
+STRUCTURE DES ONGLETS
+----------------------------------------------------------------------
+
+1. Dashboard — stats visiteurs par LP (4 indicateurs) + Total + aide
+2. Events — pageview, session_end (cookies analytics requis)
+3. Leads — historique ancien formulaire custom (plus alimenté depuis HubSpot)
+
+----------------------------------------------------------------------
+FONCTIONS APPS SCRIPT
+----------------------------------------------------------------------
+
+- resetTestData()      — vide Events + Leads, Dashboard à zéro
+- repairDashboard()    — recalcule le Dashboard + mise en page
+- setupAll()           — réparation complète
+- repairLeads()        — corrige colonnes Leads (historique)

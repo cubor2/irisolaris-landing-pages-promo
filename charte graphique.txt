@@ -1,0 +1,6 @@
+Couleur :
+Bleu clair logo : #2377ff
+Bleu texte : #06244c
+Orange CTA : FF610B
+
+Typologie : Korolev 
